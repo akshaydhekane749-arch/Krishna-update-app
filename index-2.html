@@ -1,0 +1,3336 @@
+<!DOCTYPE html>
+<html lang="mr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KrishnaBI">
+<meta name="description" content="Krishna Business Manager - Complete business management app">
+<meta name="theme-color" content="#c9a84c">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Krishna Business Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c96a;
+  --gold-dim: #a07835;
+  --steel: #4a90a4;
+  --steel-light: #6db8d0;
+
+  /* Dark theme (default) */
+  --bg-base: #0b0f1a;
+  --bg-surface: #131929;
+  --bg-card: #1a2235;
+  --bg-card2: #1f2b40;
+  --bg-input: #0f1828;
+  --border: rgba(201,168,76,0.18);
+  --border-subtle: rgba(255,255,255,0.07);
+  --text-primary: #f0f4ff;
+  --text-secondary: #8ea3c3;
+  --text-muted: #4a6080;
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.4);
+  --nav-bg: rgba(13,19,34,0.96);
+  --overlay: rgba(0,0,0,0.7);
+
+  --success: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --info: #3498db;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --font-main: 'Inter', 'Noto Sans Devanagari', sans-serif;
+  --transition: 0.2s ease;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+[data-theme="light"] {
+  --bg-base: #f0f4f8;
+  --bg-surface: #e8edf5;
+  --bg-card: #ffffff;
+  --bg-card2: #f5f8fc;
+  --bg-input: #f8fafd;
+  --border: rgba(201,168,76,0.3);
+  --border-subtle: rgba(0,0,0,0.08);
+  --text-primary: #0f1828;
+  --text-secondary: #4a6080;
+  --text-muted: #8ea3c3;
+  --shadow: 0 4px 24px rgba(0,0,0,0.1);
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.08);
+  --nav-bg: rgba(255,255,255,0.96);
+  --overlay: rgba(0,0,0,0.5);
+}
+
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-main);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--transition), color var(--transition);
+}
+button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+input, textarea, select { font-family: inherit; outline: none; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+img { max-width: 100%; }
+
+/* ═══════════════════════════════════════════
+   LOCK SCREEN
+═══════════════════════════════════════════ */
+#lock-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg-base);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 24px; padding: 40px 24px;
+}
+#lock-screen .lock-logo {
+  width: 90px; height: 90px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border-radius: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 42px; box-shadow: 0 8px 32px rgba(201,168,76,0.4);
+}
+#lock-screen h1 {
+  font-size: 22px; font-weight: 700; color: var(--text-primary);
+  text-align: center; line-height: 1.3;
+}
+#lock-screen p { font-size: 13px; color: var(--text-secondary); text-align: center; }
+.pin-dots {
+  display: flex; gap: 14px; margin: 8px 0;
+}
+.pin-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--border); border: 2px solid var(--gold);
+  transition: background 0.15s;
+}
+.pin-dot.filled { background: var(--gold); }
+.pin-pad {
+  display: grid; grid-template-columns: repeat(3, 72px);
+  gap: 12px;
+}
+.pin-key {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  font-size: 22px; font-weight: 600; color: var(--text-primary);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; box-shadow: var(--shadow-card);
+  -webkit-tap-highlight-color: transparent;
+}
+.pin-key:active { background: var(--gold); color: #000; transform: scale(0.93); }
+.pin-key.del { font-size: 20px; }
+#lock-error {
+  color: var(--danger); font-size: 13px;
+  min-height: 20px; text-align: center;
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)} 60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}
+.lock-skip-btn {
+  background: none; color: var(--text-secondary); font-size: 13px;
+  padding: 8px; border-bottom: 1px solid var(--border-subtle);
+}
+
+/* ═══════════════════════════════════════════
+   APP LAYOUT
+═══════════════════════════════════════════ */
+#app { display: none; min-height: 100dvh; flex-direction: column; }
+#app.visible { display: flex; }
+
+/* TOP HEADER */
+#top-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--nav-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.header-logo {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.header-title { flex: 1; }
+.header-title h2 { font-size: 15px; font-weight: 700; color: var(--gold); line-height: 1.2; }
+.header-title p { font-size: 11px; color: var(--text-secondary); }
+.header-actions { display: flex; gap: 8px; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--text-secondary);
+  transition: all var(--transition);
+}
+.icon-btn:active { background: var(--gold); color: #000; }
+
+/* MAIN CONTENT */
+#main-content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 0 0 calc(70px + var(--safe-bottom)) 0;
+  -webkit-overflow-scrolling: touch;
+}
+.page { display: none; padding: 16px; }
+.page.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+
+/* BOTTOM NAV */
+#bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: var(--nav-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: var(--safe-bottom);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 8px 4px 6px;
+  cursor: pointer; transition: all var(--transition);
+  border: none; background: none; color: var(--text-muted);
+  font-size: 10px; gap: 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item .nav-icon { font-size: 20px; transition: transform 0.2s; }
+.nav-item.active { color: var(--gold); }
+.nav-item.active .nav-icon { transform: scale(1.15); }
+.nav-label { font-size: 9px; font-weight: 500; line-height: 1; }
+
+/* MORE MENU */
+#more-menu {
+  position: fixed; bottom: calc(60px + var(--safe-bottom)); left: 0; right: 0;
+  background: var(--bg-surface); border-top: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 16px; z-index: 200;
+  display: none; animation: slideUp 0.2s ease;
+}
+#more-menu.open { display: block; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.more-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.more-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; padding: 12px 4px; border-radius: var(--radius-sm);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  cursor: pointer; transition: all var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.more-item:active { background: var(--bg-card2); border-color: var(--gold); }
+.more-item .mi-icon { font-size: 24px; }
+.more-item .mi-label { font-size: 10px; color: var(--text-secondary); text-align: center; font-weight: 500; }
+#overlay { position: fixed; inset: 0; background: var(--overlay); z-index: 150; display: none; }
+#overlay.open { display: block; }
+
+/* ═══════════════════════════════════════════
+   COMPONENTS
+═══════════════════════════════════════════ */
+
+/* Section Header */
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 0 0 12px;
+}
+.section-title { font-size: 14px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+.section-action { font-size: 12px; color: var(--gold); font-weight: 600; }
+
+/* Cards */
+.card {
+  background: var(--bg-card); border-radius: var(--radius);
+  border: 1px solid var(--border-subtle); padding: 16px;
+  box-shadow: var(--shadow-card); transition: border-color var(--transition);
+}
+.card:active { border-color: var(--gold); }
+
+/* Stat Cards */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.stat-card {
+  background: var(--bg-card); border-radius: var(--radius);
+  border: 1px solid var(--border-subtle); padding: 14px;
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%; border-radius: 3px 0 0 3px;
+}
+.stat-card.green::before { background: var(--success); }
+.stat-card.red::before { background: var(--danger); }
+.stat-card.gold::before { background: var(--gold); }
+.stat-card.blue::before { background: var(--info); }
+.stat-card.orange::before { background: var(--warning); }
+.stat-card.steel::before { background: var(--steel); }
+.stat-icon { font-size: 22px; margin-bottom: 6px; }
+.stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; margin-bottom: 3px; }
+.stat-value { font-size: 18px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+.stat-sub { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+/* Wide stat card */
+.stat-card.wide { grid-column: span 2; display: flex; align-items: center; gap: 14px; }
+.stat-card.wide .stat-info { flex: 1; }
+.stat-card.wide .stat-icon { font-size: 32px; margin: 0; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600;
+}
+.badge-success { background: rgba(46,204,113,0.15); color: var(--success); }
+.badge-danger { background: rgba(231,76,60,0.15); color: var(--danger); }
+.badge-warning { background: rgba(243,156,18,0.15); color: var(--warning); }
+.badge-gold { background: rgba(201,168,76,0.15); color: var(--gold); }
+.badge-info { background: rgba(52,152,219,0.15); color: var(--info); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 10px 18px; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; transition: all var(--transition);
+  cursor: pointer; border: none;
+}
+.btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: #000; }
+.btn-primary:active { opacity: 0.85; transform: scale(0.97); }
+.btn-secondary { background: var(--bg-card2); color: var(--text-primary); border: 1px solid var(--border-subtle); }
+.btn-danger { background: rgba(231,76,60,0.15); color: var(--danger); border: 1px solid rgba(231,76,60,0.3); }
+.btn-success { background: rgba(46,204,113,0.15); color: var(--success); border: 1px solid rgba(46,204,113,0.3); }
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+.btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; }
+.btn-full { width: 100%; }
+
+/* FAB */
+.fab {
+  position: fixed; bottom: calc(72px + var(--safe-bottom)); right: 16px;
+  width: 52px; height: 52px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #000; font-size: 24px; z-index: 90;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.5);
+  transition: all var(--transition); border: none; cursor: pointer;
+}
+.fab:active { transform: scale(0.93); }
+
+/* Forms */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block; }
+.form-input {
+  width: 100%; padding: 11px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-input); border: 1px solid var(--border-subtle);
+  color: var(--text-primary); font-size: 14px;
+  transition: border-color var(--transition);
+}
+.form-input:focus { border-color: var(--gold); }
+.form-input::placeholder { color: var(--text-muted); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-select {
+  width: 100%; padding: 11px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-input); border: 1px solid var(--border-subtle);
+  color: var(--text-primary); font-size: 14px;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238ea3c3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* List Items */
+.list-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 0; border-bottom: 1px solid var(--border-subtle);
+}
+.list-item:last-child { border-bottom: none; }
+.list-icon {
+  width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.list-body { flex: 1; min-width: 0; }
+.list-title { font-size: 14px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.list-amount { text-align: right; flex-shrink: 0; }
+.list-amount .amount { font-size: 15px; font-weight: 700; }
+.list-amount .amount.income { color: var(--success); }
+.list-amount .amount.expense { color: var(--danger); }
+.list-amount .date { font-size: 11px; color: var(--text-muted); }
+
+/* Modals */
+.modal-overlay {
+  position: fixed; inset: 0; background: var(--overlay); z-index: 300;
+  display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-sheet {
+  width: 100%; max-height: 90dvh;
+  background: var(--bg-surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  overflow-y: auto; transform: translateY(100%); transition: transform 0.3s ease;
+  padding: 20px 16px calc(20px + var(--safe-bottom));
+}
+.modal-overlay.open .modal-sheet { transform: translateY(0); }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal-title { font-size: 17px; font-weight: 700; }
+.modal-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--bg-card2); color: var(--text-secondary); font-size: 18px;
+  display: flex; align-items: center; justify-content: center; border: none; cursor: pointer;
+}
+
+/* Tab Bar */
+.tab-bar {
+  display: flex; gap: 4px; background: var(--bg-card); border-radius: var(--radius-sm);
+  padding: 4px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0; padding: 7px 14px; border-radius: 7px;
+  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  background: none; border: none; cursor: pointer; white-space: nowrap;
+  transition: all var(--transition);
+}
+.tab-btn.active { background: var(--gold); color: #000; }
+
+/* Charts */
+.chart-container { position: relative; height: 200px; margin: 8px 0; }
+canvas { border-radius: var(--radius-sm); }
+
+/* Progress bar */
+.progress-bar { height: 6px; background: var(--bg-card2); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+
+/* Search bar */
+.search-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 14px;
+}
+.search-bar span { font-size: 16px; color: var(--text-muted); }
+.search-bar input { flex: 1; background: none; border: none; font-size: 14px; color: var(--text-primary); }
+
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 48px 16px; color: var(--text-muted);
+}
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state h3 { font-size: 16px; color: var(--text-secondary); margin-bottom: 6px; }
+.empty-state p { font-size: 13px; }
+
+/* Toast */
+#toast {
+  position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 24px; padding: 10px 20px;
+  font-size: 13px; font-weight: 500; color: var(--text-primary);
+  box-shadow: var(--shadow); z-index: 500;
+  opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.success { border-color: var(--success); color: var(--success); }
+#toast.error { border-color: var(--danger); color: var(--danger); }
+
+/* Voice indicator */
+#voice-indicator {
+  position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%);
+  background: var(--bg-card); border: 2px solid var(--gold);
+  border-radius: 24px; padding: 10px 20px;
+  font-size: 13px; font-weight: 600; color: var(--gold);
+  display: none; align-items: center; gap: 8px; z-index: 400;
+  animation: pulse-border 1s infinite;
+}
+#voice-indicator.active { display: flex; }
+@keyframes pulse-border {
+  0%,100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(201,168,76,0); }
+}
+
+/* Category chips */
+.chip-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.chip {
+  padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  color: var(--text-secondary); cursor: pointer; transition: all 0.15s;
+}
+.chip.active { background: var(--gold); color: #000; border-color: var(--gold); }
+
+/* Image preview */
+.img-preview {
+  width: 100%; height: 120px; border-radius: var(--radius-sm);
+  object-fit: cover; background: var(--bg-card2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; border: 2px dashed var(--border); cursor: pointer;
+  overflow: hidden;
+}
+
+/* Summary row */
+.summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border-subtle);
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-label { font-size: 13px; color: var(--text-secondary); }
+.summary-value { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+
+/* Page title */
+.page-title {
+  font-size: 20px; font-weight: 800; color: var(--text-primary); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.page-title span { font-size: 24px; }
+
+/* ═══════════════════════════════════════════
+   DASHBOARD SPECIFIC
+═══════════════════════════════════════════ */
+.welcome-banner {
+  background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(74,144,164,0.1));
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.welcome-text h3 { font-size: 16px; font-weight: 700; color: var(--gold); }
+.welcome-text p { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.pl-display {
+  font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
+}
+.pl-display.profit { color: var(--success); }
+.pl-display.loss { color: var(--danger); }
+
+/* Quick actions */
+.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+.qa-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 10px 4px; border-radius: var(--radius-sm);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  cursor: pointer; transition: all var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.qa-btn:active { border-color: var(--gold); background: var(--bg-card2); }
+.qa-btn .qa-icon { font-size: 22px; }
+.qa-btn .qa-label { font-size: 9px; color: var(--text-secondary); font-weight: 500; text-align: center; line-height: 1.2; }
+
+/* ═══════════════════════════════════════════
+   CALCULATOR
+═══════════════════════════════════════════ */
+.calc-display {
+  background: var(--bg-card); border-radius: var(--radius);
+  padding: 16px; text-align: right; margin-bottom: 16px;
+}
+.calc-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+.calc-result { font-size: 32px; font-weight: 700; color: var(--gold); }
+.calc-unit { font-size: 14px; color: var(--text-secondary); }
+
+/* ═══════════════════════════════════════════
+   INVENTORY
+═══════════════════════════════════════════ */
+.stock-card {
+  background: var(--bg-card); border-radius: var(--radius);
+  padding: 14px; border: 1px solid var(--border-subtle); margin-bottom: 10px;
+}
+.stock-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.stock-name { font-size: 14px; font-weight: 700; }
+.stock-qty { font-size: 20px; font-weight: 800; color: var(--gold); }
+.stock-low { color: var(--danger) !important; }
+
+/* ═══════════════════════════════════════════
+   QUOTATION / INVOICE
+═══════════════════════════════════════════ */
+.quote-line {
+  display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px;
+}
+.quote-line input { flex: 1; }
+.quote-line .qty { width: 60px; flex-shrink: 0; }
+.quote-line .rate { width: 80px; flex-shrink: 0; }
+.quote-total {
+  background: linear-gradient(135deg, rgba(201,168,76,0.1), transparent);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 12px 14px; margin-top: 12px;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (min-width: 480px) {
+  .stat-grid { grid-template-columns: repeat(3, 1fr); }
+  .more-grid { grid-template-columns: repeat(5, 1fr); }
+}
+@media (min-width: 768px) {
+  #bottom-nav { max-width: 600px; left: 50%; transform: translateX(-50%); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  #main-content { max-width: 600px; margin: 0 auto; }
+  #top-header { max-width: 600px; margin: 0 auto; }
+  .fab { right: calc(50% - 300px + 16px); }
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     LOCK SCREEN
+════════════════════════════════════════ -->
+<div id="lock-screen">
+  <div class="lock-logo">🔐</div>
+  <div>
+    <h1>Krishna Business<br>Manager</h1>
+    <p>कृष्णा बिझनेस मॅनेजर</p>
+  </div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div>
+    <div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div>
+    <div class="pin-dot" id="d3"></div>
+  </div>
+  <div id="lock-error"></div>
+  <div class="pin-pad">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2</button>
+    <button class="pin-key" onclick="pinKey('3')">3</button>
+    <button class="pin-key" onclick="pinKey('4')">4</button>
+    <button class="pin-key" onclick="pinKey('5')">5</button>
+    <button class="pin-key" onclick="pinKey('6')">6</button>
+    <button class="pin-key" onclick="pinKey('7')">7</button>
+    <button class="pin-key" onclick="pinKey('8')">8</button>
+    <button class="pin-key" onclick="pinKey('9')">9</button>
+    <button class="pin-key" onclick="pinKey('bio')">👆</button>
+    <button class="pin-key" onclick="pinKey('0')">0</button>
+    <button class="pin-key del" onclick="pinKey('del')">⌫</button>
+  </div>
+  <button class="lock-skip-btn" onclick="skipLock()">Skip / पुढे जा</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════ -->
+<div id="app">
+  <!-- Top Header -->
+  <header id="top-header">
+    <div class="header-logo">⚙️</div>
+    <div class="header-title">
+      <h2>Krishna Steel</h2>
+      <p id="header-subtitle">Dashboard</p>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Theme">🌙</button>
+      <button class="icon-btn" onclick="startVoice()" title="Voice Entry" id="voice-btn">🎙️</button>
+      <button class="icon-btn" onclick="showNotifications()" title="Reminders">🔔</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main-content">
+
+    <!-- ── PAGE: DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="welcome-banner">
+        <div style="font-size:32px">⚙️</div>
+        <div class="welcome-text">
+          <h3 id="welcome-msg">नमस्कार!</h3>
+          <p id="today-date-display"></p>
+        </div>
+      </div>
+
+      <!-- P&L highlight -->
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">या महिन्याचा नफा/तोटा</div>
+            <div class="pl-display" id="dash-pl">₹0</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">आज खर्च</div>
+            <div style="font-size:16px;font-weight:700;color:var(--danger)" id="dash-today-exp">₹0</div>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--border-subtle);margin:12px 0"></div>
+        <div style="display:flex;gap:16px">
+          <div style="flex:1;text-align:center">
+            <div style="font-size:11px;color:var(--text-muted)">उत्पन्न</div>
+            <div style="font-size:15px;font-weight:700;color:var(--success)" id="dash-income">₹0</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:11px;color:var(--text-muted)">खर्च</div>
+            <div style="font-size:15px;font-weight:700;color:var(--danger)" id="dash-expense">₹0</div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:11px;color:var(--text-muted)">थकबाकी</div>
+            <div style="font-size:15px;font-weight:700;color:var(--warning)" id="dash-pending">₹0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stat-grid">
+        <div class="stat-card gold">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">रोख</div>
+          <div class="stat-value" id="dash-cash">₹0</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">🏦</div>
+          <div class="stat-label">बँक</div>
+          <div class="stat-value" id="dash-bank">₹0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">📋</div>
+          <div class="stat-label">प्रकल्प</div>
+          <div class="stat-value" id="dash-projects">0</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">ग्राहक</div>
+          <div class="stat-value" id="dash-customers">0</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="section-head"><span class="section-title">Quick Actions</span></div>
+      <div class="quick-actions" style="margin-bottom:16px">
+        <div class="qa-btn" onclick="openModal('expense-modal')">
+          <span class="qa-icon">➖</span><span class="qa-label">खर्च Add</span>
+        </div>
+        <div class="qa-btn" onclick="openModal('income-modal')">
+          <span class="qa-icon">➕</span><span class="qa-label">उत्पन्न Add</span>
+        </div>
+        <div class="qa-btn" onclick="openModal('project-modal')">
+          <span class="qa-icon">🏗️</span><span class="qa-label">प्रकल्प</span>
+        </div>
+        <div class="qa-btn" onclick="openModal('customer-modal')">
+          <span class="qa-icon">👤</span><span class="qa-label">ग्राहक</span>
+        </div>
+      </div>
+
+      <!-- Recent Expenses -->
+      <div class="section-head">
+        <span class="section-title">अलीकडील खर्च</span>
+        <button class="section-action" onclick="navTo('expenses')">सर्व पहा</button>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div id="recent-expenses-list"><div class="empty-state"><div class="empty-icon">📝</div><p>खर्च नाही</p></div></div>
+      </div>
+
+      <!-- Recent Income -->
+      <div class="section-head">
+        <span class="section-title">अलीकडील उत्पन्न</span>
+        <button class="section-action" onclick="navTo('income')">सर्व पहा</button>
+      </div>
+      <div class="card">
+        <div id="recent-income-list"><div class="empty-state"><div class="empty-icon">💸</div><p>उत्पन्न नाही</p></div></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: EXPENSES ── -->
+    <div class="page" id="page-expenses">
+      <div class="page-title"><span>💸</span>खर्च व्यवस्थापन</div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="खर्च शोधा..." id="exp-search" oninput="filterExpenses()">
+      </div>
+      <div class="tab-bar" id="exp-cat-tabs">
+        <button class="tab-btn active" onclick="filterExpCat('all',this)">सर्व</button>
+        <button class="tab-btn" onclick="filterExpCat('Material',this)">Material</button>
+        <button class="tab-btn" onclick="filterExpCat('Labour',this)">Labour</button>
+        <button class="tab-btn" onclick="filterExpCat('Diesel',this)">Diesel</button>
+        <button class="tab-btn" onclick="filterExpCat('Tea',this)">Tea</button>
+        <button class="tab-btn" onclick="filterExpCat('Transport',this)">Transport</button>
+        <button class="tab-btn" onclick="filterExpCat('Machine Repair',this)">Machine</button>
+        <button class="tab-btn" onclick="filterExpCat('Electricity',this)">Electric</button>
+        <button class="tab-btn" onclick="filterExpCat('Other',this)">Other</button>
+      </div>
+      <!-- Summary -->
+      <div class="stat-grid" style="margin-bottom:16px">
+        <div class="stat-card red">
+          <div class="stat-icon">📅</div>
+          <div class="stat-label">आज</div>
+          <div class="stat-value" id="exp-today-total">₹0</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon">📆</div>
+          <div class="stat-label">या महिन्यात</div>
+          <div class="stat-value" id="exp-month-total">₹0</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="expense-list-container"><div class="empty-state"><div class="empty-icon">📋</div><h3>खर्च नाही</h3><p>+ बटण दाबून खर्च Add करा</p></div></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: INCOME ── -->
+    <div class="page" id="page-income">
+      <div class="page-title"><span>💰</span>उत्पन्न व्यवस्थापन</div>
+      <div class="stat-grid" style="margin-bottom:16px">
+        <div class="stat-card green">
+          <div class="stat-icon">📅</div>
+          <div class="stat-label">आज</div>
+          <div class="stat-value" id="inc-today-total">₹0</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">📆</div>
+          <div class="stat-label">या महिन्यात</div>
+          <div class="stat-value" id="inc-month-total">₹0</div>
+        </div>
+      </div>
+      <div class="card">
+        <div id="income-list-container"><div class="empty-state"><div class="empty-icon">💸</div><h3>उत्पन्न नाही</h3><p>+ बटण दाबून उत्पन्न Add करा</p></div></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: PROJECTS ── -->
+    <div class="page" id="page-projects">
+      <div class="page-title"><span>🏗️</span>प्रकल्प व्यवस्थापन</div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="प्रकल्प शोधा..." oninput="filterProjects(this.value)">
+      </div>
+      <div id="project-list-container"><div class="empty-state"><div class="empty-icon">🏗️</div><h3>प्रकल्प नाही</h3><p>+ बटण दाबून प्रकल्प तयार करा</p></div></div>
+    </div>
+
+    <!-- ── PAGE: CUSTOMERS ── -->
+    <div class="page" id="page-customers">
+      <div class="page-title"><span>👥</span>ग्राहक व्यवस्थापन</div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="ग्राहक शोधा..." oninput="filterCustomers(this.value)">
+      </div>
+      <div id="customer-list-container"><div class="empty-state"><div class="empty-icon">👤</div><h3>ग्राहक नाही</h3><p>+ बटण दाबून ग्राहक Add करा</p></div></div>
+    </div>
+
+    <!-- ── PAGE: SUPPLIERS ── -->
+    <div class="page" id="page-suppliers">
+      <div class="page-title"><span>🏭</span>पुरवठादार</div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="पुरवठादार शोधा..." oninput="filterSuppliers(this.value)">
+      </div>
+      <div id="supplier-list-container"><div class="empty-state"><div class="empty-icon">🏭</div><h3>पुरवठादार नाही</h3><p>+ बटण दाबून पुरवठादार Add करा</p></div></div>
+    </div>
+
+    <!-- ── PAGE: INVENTORY ── -->
+    <div class="page" id="page-inventory">
+      <div class="page-title"><span>📦</span>साठा व्यवस्थापन</div>
+      <div id="low-stock-alert" style="display:none" class="card" style="margin-bottom:12px;border-color:var(--danger)">
+        <div style="color:var(--danger);font-weight:600;font-size:13px">⚠️ कमी साठा सूचना</div>
+        <div id="low-stock-items" style="font-size:12px;color:var(--text-secondary);margin-top:4px"></div>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="filterInv('all',this)">सर्व</button>
+        <button class="tab-btn" onclick="filterInv('pipe',this)">पाईप</button>
+        <button class="tab-btn" onclick="filterInv('glass',this)">काच</button>
+        <button class="tab-btn" onclick="filterInv('accessories',this)">Accessories</button>
+      </div>
+      <div id="inventory-list-container"><div class="empty-state"><div class="empty-icon">📦</div><h3>साठा नाही</h3><p>+ बटण दाबून साठा Add करा</p></div></div>
+    </div>
+
+    <!-- ── PAGE: LABOUR ── -->
+    <div class="page" id="page-labour">
+      <div class="page-title"><span>👷</span>कामगार व्यवस्थापन</div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="labourTab('list',this)">कामगार यादी</button>
+        <button class="tab-btn" onclick="labourTab('attendance',this)">हजेरी</button>
+        <button class="tab-btn" onclick="labourTab('wages',this)">पगार</button>
+      </div>
+      <div id="labour-list-container"><div class="empty-state"><div class="empty-icon">👷</div><h3>कामगार नाही</h3><p>+ बटण दाबून कामगार Add करा</p></div></div>
+      <div id="attendance-container" style="display:none">
+        <div class="card">
+          <div class="form-group">
+            <label class="form-label">तारीख निवडा</label>
+            <input type="date" class="form-input" id="att-date" value="">
+          </div>
+          <div id="attendance-grid"></div>
+        </div>
+      </div>
+      <div id="wages-container" style="display:none">
+        <div id="wages-list"></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: QUOTATION ── -->
+    <div class="page" id="page-quotation">
+      <div class="page-title"><span>📄</span>Quotation Generator</div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="quoteTab('create',this)">तयार करा</button>
+        <button class="tab-btn" onclick="quoteTab('list',this)">यादी</button>
+      </div>
+      <div id="quote-create-panel">
+        <div class="card" style="margin-bottom:12px">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">ग्राहकाचे नाव</label>
+              <input type="text" class="form-input" id="q-cname" placeholder="नाव">
+            </div>
+            <div class="form-group">
+              <label class="form-label">दिनांक</label>
+              <input type="date" class="form-input" id="q-date">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">प्रकल्प / काम</label>
+            <input type="text" class="form-input" id="q-project" placeholder="SS Railing - 1st Floor">
+          </div>
+        </div>
+        <div class="section-head">
+          <span class="section-title">Items</span>
+          <button class="btn btn-primary btn-sm" onclick="addQuoteLine()">+ Item</button>
+        </div>
+        <div id="quote-lines" style="margin-bottom:12px"></div>
+        <div class="quote-total card">
+          <div class="summary-row"><span class="summary-label">Subtotal</span><span class="summary-value" id="q-subtotal">₹0</span></div>
+          <div class="summary-row">
+            <span class="summary-label">GST (<select id="q-gst-rate" class="form-select" style="display:inline;width:70px;padding:2px 6px" onchange="calcQuoteTotal()"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select>)</span>
+            <span class="summary-value" id="q-gst-amt">₹0</span>
+          </div>
+          <div class="summary-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:12px">
+            <span class="summary-label" style="font-weight:700;color:var(--text-primary)">एकूण Total</span>
+            <span class="summary-value" style="color:var(--gold);font-size:18px" id="q-grand-total">₹0</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-primary" style="flex:1" onclick="saveQuotation()">💾 Save</button>
+          <button class="btn btn-secondary" style="flex:1" onclick="printQuotation()">🖨️ Print</button>
+        </div>
+      </div>
+      <div id="quote-list-panel" style="display:none">
+        <div id="quotation-list-container"><div class="empty-state"><div class="empty-icon">📄</div><h3>Quotation नाही</h3></div></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: INVOICE ── -->
+    <div class="page" id="page-invoice">
+      <div class="page-title"><span>🧾</span>Invoice Generator</div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="invTab('create',this)">तयार करा</button>
+        <button class="tab-btn" onclick="invTab('list',this)">यादी</button>
+      </div>
+      <div id="inv-create-panel">
+        <div class="card" style="margin-bottom:12px">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Invoice No.</label>
+              <input type="text" class="form-input" id="inv-no" placeholder="KSR-001">
+            </div>
+            <div class="form-group">
+              <label class="form-label">दिनांक</label>
+              <input type="date" class="form-input" id="inv-date">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">ग्राहकाचे नाव</label>
+              <input type="text" class="form-input" id="inv-cname">
+            </div>
+            <div class="form-group">
+              <label class="form-label">मोबाइल</label>
+              <input type="tel" class="form-input" id="inv-phone">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">पत्ता</label>
+            <textarea class="form-input" id="inv-address" rows="2" placeholder="पत्ता..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">GSTIN (optional)</label>
+              <input type="text" class="form-input" id="inv-gstin" placeholder="27AAAAA...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">PAN (optional)</label>
+              <input type="text" class="form-input" id="inv-pan">
+            </div>
+          </div>
+        </div>
+        <div class="section-head">
+          <span class="section-title">Items</span>
+          <button class="btn btn-primary btn-sm" onclick="addInvLine()">+ Item</button>
+        </div>
+        <div id="inv-lines" style="margin-bottom:12px"></div>
+        <div class="quote-total card">
+          <div class="summary-row"><span class="summary-label">Subtotal</span><span class="summary-value" id="inv-subtotal">₹0</span></div>
+          <div class="summary-row">
+            <span class="summary-label">CGST (9%)</span><span class="summary-value" id="inv-cgst">₹0</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">SGST (9%)</span><span class="summary-value" id="inv-sgst">₹0</span>
+          </div>
+          <div class="summary-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:12px">
+            <span class="summary-label" style="font-weight:700;color:var(--text-primary)">एकूण Total</span>
+            <span class="summary-value" style="color:var(--gold);font-size:18px" id="inv-grand-total">₹0</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-primary" style="flex:1" onclick="saveInvoice()">💾 Save</button>
+          <button class="btn btn-secondary" style="flex:1" onclick="printInvoice()">🖨️ Print</button>
+        </div>
+      </div>
+      <div id="inv-list-panel" style="display:none">
+        <div id="invoice-list-container"><div class="empty-state"><div class="empty-icon">🧾</div><h3>Invoice नाही</h3></div></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: REPORTS ── -->
+    <div class="page" id="page-reports">
+      <div class="page-title"><span>📊</span>Reports</div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="reportTab('pl',this)">P&L</button>
+        <button class="tab-btn" onclick="reportTab('expense',this)">खर्च</button>
+        <button class="tab-btn" onclick="reportTab('income',this)">उत्पन्न</button>
+        <button class="tab-btn" onclick="reportTab('project',this)">प्रकल्प</button>
+      </div>
+      <div id="report-pl-panel">
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group">
+            <label class="form-label">महिना</label>
+            <input type="month" class="form-input" id="rep-month">
+          </div>
+          <div style="display:flex;align-items:flex-end;padding-bottom:14px">
+            <button class="btn btn-primary btn-full" onclick="generatePLReport()">Generate</button>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:12px">
+          <div class="chart-container"><canvas id="pl-bar-chart"></canvas></div>
+        </div>
+        <div class="card" id="pl-summary-card">
+          <div class="empty-state"><div class="empty-icon">📊</div><p>महिना निवडा आणि Generate करा</p></div>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn btn-secondary btn-full" onclick="exportReport()">📥 Export PDF</button>
+        </div>
+      </div>
+      <div id="report-expense-panel" style="display:none">
+        <div class="card" style="margin-bottom:12px">
+          <div class="chart-container"><canvas id="exp-pie-chart"></canvas></div>
+        </div>
+        <div class="card" id="exp-cat-breakdown"></div>
+      </div>
+      <div id="report-income-panel" style="display:none">
+        <div class="card">
+          <div class="chart-container"><canvas id="inc-bar-chart"></canvas></div>
+        </div>
+        <div class="card" style="margin-top:12px" id="inc-summary-card"></div>
+      </div>
+      <div id="report-project-panel" style="display:none">
+        <div id="project-report-list"></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: CALCULATORS ── -->
+    <div class="page" id="page-calculators">
+      <div class="page-title"><span>🔢</span>Calculators</div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="calcTab('rf',this)">Running Foot</button>
+        <button class="tab-btn" onclick="calcTab('pipe',this)">Pipe Weight</button>
+        <button class="tab-btn" onclick="calcTab('cost',this)">Material Cost</button>
+        <button class="tab-btn" onclick="calcTab('profit',this)">Profit</button>
+        <button class="tab-btn" onclick="calcTab('gst',this)">GST</button>
+      </div>
+
+      <!-- Running Foot Calc -->
+      <div id="calc-rf-panel">
+        <div class="card" style="margin-bottom:12px">
+          <div class="form-group"><label class="form-label">लांबी (feet)</label><input type="number" class="form-input" id="rf-length" placeholder="0" oninput="calcRF()"></div>
+          <div class="form-group"><label class="form-label">Rate per Running Foot (₹)</label><input type="number" class="form-input" id="rf-rate" placeholder="0" oninput="calcRF()"></div>
+          <div class="form-group"><label class="form-label">Post Count</label><input type="number" class="form-input" id="rf-posts" placeholder="0" oninput="calcRF()"></div>
+          <div class="form-group"><label class="form-label">Post Rate (₹ each)</label><input type="number" class="form-input" id="rf-post-rate" placeholder="0" oninput="calcRF()"></div>
+        </div>
+        <div class="calc-display">
+          <div class="calc-label">Running Foot Total</div>
+          <div class="calc-result" id="rf-result">₹0</div>
+        </div>
+        <div class="card">
+          <div class="summary-row"><span class="summary-label">Railing Cost</span><span class="summary-value" id="rf-rail-cost">₹0</span></div>
+          <div class="summary-row"><span class="summary-label">Post Cost</span><span class="summary-value" id="rf-post-cost">₹0</span></div>
+          <div class="summary-row"><span class="summary-label">एकूण Total</span><span class="summary-value" style="color:var(--gold)" id="rf-total">₹0</span></div>
+        </div>
+      </div>
+
+      <!-- Pipe Weight Calc -->
+      <div id="calc-pipe-panel" style="display:none">
+        <div class="card" style="margin-bottom:12px">
+          <div class="form-group"><label class="form-label">Outer Diameter (mm)</label><input type="number" class="form-input" id="pw-od" placeholder="50" oninput="calcPW()"></div>
+          <div class="form-group"><label class="form-label">Thickness (mm)</label><input type="number" class="form-input" id="pw-thick" placeholder="1.6" oninput="calcPW()"></div>
+          <div class="form-group"><label class="form-label">Length (meters)</label><input type="number" class="form-input" id="pw-len" placeholder="6" oninput="calcPW()"></div>
+          <div class="form-group"><label class="form-label">Rate per kg (₹)</label><input type="number" class="form-input" id="pw-rate" placeholder="120" oninput="calcPW()"></div>
+        </div>
+        <div class="calc-display">
+          <div class="calc-label">Pipe Weight</div>
+          <div class="calc-result" id="pw-weight">0 <span class="calc-unit">kg</span></div>
+        </div>
+        <div class="card">
+          <div class="summary-row"><span class="summary-label">वजन (kg)</span><span class="summary-value" id="pw-kg">0</span></div>
+          <div class="summary-row"><span class="summary-label">किंमत</span><span class="summary-value" style="color:var(--gold)" id="pw-cost">₹0</span></div>
+        </div>
+      </div>
+
+      <!-- Material Cost Calc -->
+      <div id="calc-cost-panel" style="display:none">
+        <div class="card" style="margin-bottom:12px">
+          <div id="mat-items">
+            <div class="quote-line">
+              <input type="text" class="form-input" placeholder="साहित्य" style="flex:2">
+              <input type="number" class="form-input qty" placeholder="Qty">
+              <input type="number" class="form-input rate" placeholder="Rate" oninput="calcMatCost()">
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="addMatLine()" style="margin-top:8px">+ Add Item</button>
+        </div>
+        <div class="calc-display">
+          <div class="calc-label">Material Total</div>
+          <div class="calc-result" id="mat-total">₹0</div>
+        </div>
+      </div>
+
+      <!-- Profit Calc -->
+      <div id="calc-profit-panel" style="display:none">
+        <div class="card" style="margin-bottom:12px">
+          <div class="form-group"><label class="form-label">Cost Price (₹)</label><input type="number" class="form-input" id="pr-cost" placeholder="0" oninput="calcProfit()"></div>
+          <div class="form-group"><label class="form-label">Selling Price (₹)</label><input type="number" class="form-input" id="pr-sell" placeholder="0" oninput="calcProfit()"></div>
+          <div class="form-group"><label class="form-label">Overhead / Labour (₹)</label><input type="number" class="form-input" id="pr-overhead" placeholder="0" oninput="calcProfit()"></div>
+        </div>
+        <div class="calc-display">
+          <div class="calc-label">Profit / नफा</div>
+          <div class="calc-result" id="pr-profit">₹0</div>
+        </div>
+        <div class="card">
+          <div class="summary-row"><span class="summary-label">Profit Margin</span><span class="summary-value" id="pr-margin">0%</span></div>
+          <div class="summary-row"><span class="summary-label">ROI</span><span class="summary-value" id="pr-roi">0%</span></div>
+        </div>
+      </div>
+
+      <!-- GST Calc -->
+      <div id="calc-gst-panel" style="display:none">
+        <div class="card" style="margin-bottom:12px">
+          <div class="form-group"><label class="form-label">Amount (₹)</label><input type="number" class="form-input" id="gst-amount" placeholder="0" oninput="calcGST()"></div>
+          <div class="form-group">
+            <label class="form-label">GST Rate</label>
+            <select class="form-select" id="gst-rate" onchange="calcGST()">
+              <option value="5">5%</option><option value="12">12%</option>
+              <option value="18" selected>18%</option><option value="28">28%</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Calculation Type</label>
+            <select class="form-select" id="gst-type" onchange="calcGST()">
+              <option value="exclusive">Exclusive (Add GST)</option>
+              <option value="inclusive">Inclusive (Extract GST)</option>
+            </select>
+          </div>
+        </div>
+        <div class="calc-display">
+          <div class="calc-label">Total with GST</div>
+          <div class="calc-result" id="gst-total">₹0</div>
+        </div>
+        <div class="card">
+          <div class="summary-row"><span class="summary-label">Base Amount</span><span class="summary-value" id="gst-base">₹0</span></div>
+          <div class="summary-row"><span class="summary-label">CGST (half)</span><span class="summary-value" id="gst-cgst">₹0</span></div>
+          <div class="summary-row"><span class="summary-label">SGST (half)</span><span class="summary-value" id="gst-sgst">₹0</span></div>
+          <div class="summary-row"><span class="summary-label">एकूण Total</span><span class="summary-value" style="color:var(--gold)" id="gst-grand">₹0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: REMINDERS ── -->
+    <div class="page" id="page-reminders">
+      <div class="page-title"><span>🔔</span>Reminders</div>
+      <div id="reminder-list-container"></div>
+      <div style="margin-top:12px">
+        <button class="btn btn-primary btn-full" onclick="openModal('reminder-modal')">+ Reminder जोडा</button>
+      </div>
+    </div>
+
+    <!-- ── PAGE: BACKUP ── -->
+    <div class="page" id="page-backup">
+      <div class="page-title"><span>☁️</span>Backup & Restore</div>
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px">📤 Export / Backup</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-primary btn-full" onclick="exportJSON()">📄 Export JSON</button>
+          <button class="btn btn-secondary btn-full" onclick="exportExcel()">📊 Export Excel</button>
+          <button class="btn btn-secondary btn-full" onclick="exportPDFBackup()">📑 Export PDF Report</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px">📥 Import / Restore</div>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
+        <button class="btn btn-secondary btn-full" onclick="document.getElementById('import-file').click()">📂 Import JSON Backup</button>
+        <p style="font-size:11px;color:var(--text-muted);margin-top:8px">⚠️ Import केल्याने सर्व डेटा replace होईल</p>
+      </div>
+      <div class="card">
+        <div style="font-size:14px;font-weight:600;margin-bottom:8px">📊 Data Summary</div>
+        <div id="data-summary"></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: SETTINGS ── -->
+    <div class="page" id="page-settings">
+      <div class="page-title"><span>⚙️</span>Settings</div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px">व्यवसाय माहिती</div>
+        <div class="form-group"><label class="form-label">व्यवसायाचे नाव</label><input type="text" class="form-input" id="s-biz-name" value="Krishna Steel Railing & Furniture"></div>
+        <div class="form-group"><label class="form-label">मालकाचे नाव</label><input type="text" class="form-input" id="s-owner-name"></div>
+        <div class="form-group"><label class="form-label">मोबाइल</label><input type="tel" class="form-input" id="s-phone"></div>
+        <div class="form-group"><label class="form-label">पत्ता</label><textarea class="form-input" id="s-address" rows="2"></textarea></div>
+        <div class="form-group"><label class="form-label">GSTIN</label><input type="text" class="form-input" id="s-gstin"></div>
+        <button class="btn btn-primary btn-full" onclick="saveBizSettings()">💾 Save</button>
+      </div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px">🔐 Security</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">नवीन PIN</label>
+            <input type="password" class="form-input" id="s-pin" placeholder="4 अंक" maxlength="4">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm PIN</label>
+            <input type="password" class="form-input" id="s-pin2" placeholder="4 अंक" maxlength="4">
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-full" onclick="updatePIN()">🔑 PIN बदला</button>
+      </div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px">🎨 Appearance</div>
+        <div class="summary-row">
+          <span class="summary-label">Dark Mode</span>
+          <button class="btn btn-secondary btn-sm" onclick="toggleTheme()" id="theme-toggle-btn">🌙 Dark</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px">💰 Opening Balances</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">रोख (Cash)</label>
+            <input type="number" class="form-input" id="s-cash" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">बँक (Bank)</label>
+            <input type="number" class="form-input" id="s-bank" placeholder="0">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="saveBalances()">💾 Save</button>
+      </div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:8px">ℹ️ App Info</div>
+        <div class="summary-row"><span class="summary-label">Version</span><span class="summary-value">v1.0.0</span></div>
+        <div class="summary-row"><span class="summary-label">Made for</span><span class="summary-value">Krishna Steel</span></div>
+        <div class="summary-row"><span class="summary-label">Developer</span><span class="summary-value">Powered by AI</span></div>
+      </div>
+
+      <button class="btn btn-danger btn-full" onclick="clearAllData()" style="margin-bottom:20px">🗑️ सर्व डेटा Delete करा</button>
+    </div>
+
+  </main><!-- /main-content -->
+
+  <!-- Bottom Nav -->
+  <nav id="bottom-nav">
+    <button class="nav-item active" onclick="navTo('dashboard')" id="nav-dashboard">
+      <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+    </button>
+    <button class="nav-item" onclick="navTo('expenses')" id="nav-expenses">
+      <span class="nav-icon">💸</span><span class="nav-label">खर्च</span>
+    </button>
+    <button class="nav-item" onclick="navTo('income')" id="nav-income">
+      <span class="nav-icon">💰</span><span class="nav-label">उत्पन्न</span>
+    </button>
+    <button class="nav-item" onclick="navTo('projects')" id="nav-projects">
+      <span class="nav-icon">🏗️</span><span class="nav-label">प्रकल्प</span>
+    </button>
+    <button class="nav-item" onclick="toggleMoreMenu()" id="nav-more">
+      <span class="nav-icon">⋯</span><span class="nav-label">More</span>
+    </button>
+  </nav>
+
+  <!-- FAB -->
+  <button class="fab" id="main-fab" onclick="fabAction()">+</button>
+</div>
+
+<!-- More Menu -->
+<div id="overlay" onclick="closeMoreMenu()"></div>
+<div id="more-menu">
+  <div class="more-grid">
+    <div class="more-item" onclick="closeMoreAndGo('customers')"><span class="mi-icon">👥</span><span class="mi-label">ग्राहक</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('suppliers')"><span class="mi-icon">🏭</span><span class="mi-label">पुरवठादार</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('inventory')"><span class="mi-icon">📦</span><span class="mi-label">साठा</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('labour')"><span class="mi-icon">👷</span><span class="mi-label">कामगार</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('quotation')"><span class="mi-icon">📄</span><span class="mi-label">Quotation</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('invoice')"><span class="mi-icon">🧾</span><span class="mi-label">Invoice</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('reports')"><span class="mi-icon">📊</span><span class="mi-label">Reports</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('calculators')"><span class="mi-icon">🔢</span><span class="mi-label">Calculator</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('reminders')"><span class="mi-icon">🔔</span><span class="mi-label">Reminders</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('backup')"><span class="mi-icon">☁️</span><span class="mi-label">Backup</span></div>
+    <div class="more-item" onclick="closeMoreAndGo('settings')"><span class="mi-icon">⚙️</span><span class="mi-label">Settings</span></div>
+  </div>
+</div>
+
+<!-- Voice indicator -->
+<div id="voice-indicator">🎙️ <span id="voice-text">बोला...</span></div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ════════════════════════════════════════
+     MODALS
+════════════════════════════════════════ -->
+
+<!-- Expense Modal -->
+<div class="modal-overlay" id="expense-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title">💸 खर्च Add करा</div>
+      <button class="modal-close" onclick="closeModal('expense-modal')">✕</button>
+    </div>
+    <input type="hidden" id="exp-edit-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">दिनांक *</label>
+        <input type="date" class="form-input" id="exp-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">रक्कम (₹) *</label>
+        <input type="number" class="form-input" id="exp-amount" placeholder="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">खर्चाचे नाव *</label>
+      <input type="text" class="form-input" id="exp-name" placeholder="खर्चाचे नाव लिहा">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category *</label>
+      <select class="form-select" id="exp-cat">
+        <option value="Material">Material</option>
+        <option value="Labour">Labour</option>
+        <option value="Diesel">Diesel</option>
+        <option value="Tea">Tea</option>
+        <option value="Transport">Transport</option>
+        <option value="Machine Repair">Machine Repair</option>
+        <option value="Electricity">Electricity</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">प्रकल्प (optional)</label>
+      <select class="form-select" id="exp-project">
+        <option value="">-- प्रकल्प निवडा --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-input" id="exp-notes" rows="2" placeholder="टिपणी..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bill Photo (optional)</label>
+      <input type="file" id="exp-photo" accept="image/*" style="display:none" onchange="previewBill(event)">
+      <div class="img-preview" id="exp-photo-preview" onclick="document.getElementById('exp-photo').click()">
+        📸
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveExpense()">💾 Save</button>
+      <button class="btn btn-secondary" onclick="closeModal('expense-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Income Modal -->
+<div class="modal-overlay" id="income-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title">💰 उत्पन्न Add करा</div>
+      <button class="modal-close" onclick="closeModal('income-modal')">✕</button>
+    </div>
+    <input type="hidden" id="inc-edit-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">दिनांक *</label>
+        <input type="date" class="form-input" id="inc-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">रक्कम (₹) *</label>
+        <input type="number" class="form-input" id="inc-amount" placeholder="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">ग्राहकाचे नाव *</label>
+      <input type="text" class="form-input" id="inc-customer" placeholder="ग्राहकाचे नाव">
+    </div>
+    <div class="form-group">
+      <label class="form-label">प्रकल्प / काम</label>
+      <input type="text" class="form-input" id="inc-project-name" placeholder="SS Railing - 2nd Floor">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Payment Mode</label>
+      <select class="form-select" id="inc-mode">
+        <option value="Cash">Cash / रोख</option>
+        <option value="UPI">UPI</option>
+        <option value="Bank Transfer">Bank Transfer</option>
+        <option value="Cheque">Cheque</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">थकबाकी Pending (₹)</label>
+      <input type="number" class="form-input" id="inc-pending" placeholder="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">प्रकल्प लिंक</label>
+      <select class="form-select" id="inc-project-link">
+        <option value="">-- प्रकल्प निवडा --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-input" id="inc-notes" rows="2" placeholder="टिपणी..."></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveIncome()">💾 Save</button>
+      <button class="btn btn-secondary" onclick="closeModal('income-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Project Modal -->
+<div class="modal-overlay" id="project-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title">🏗️ प्रकल्प तयार करा</div>
+      <button class="modal-close" onclick="closeModal('project-modal')">✕</button>
+    </div>
+    <input type="hidden" id="proj-edit-id">
+    <div class="form-group"><label class="form-label">प्रकल्पाचे नाव *</label><input type="text" class="form-input" id="proj-name" placeholder="Project name"></div>
+    <div class="form-group"><label class="form-label">ग्राहकाचे नाव</label><input type="text" class="form-input" id="proj-customer" placeholder="Customer name"></div>
+    <div class="form-group"><label class="form-label">पत्ता / जागा</label><input type="text" class="form-input" id="proj-location" placeholder="Akole, Ahmednagar"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Start Date</label><input type="date" class="form-input" id="proj-start"></div>
+      <div class="form-group"><label class="form-label">अंदाजित रक्कम (₹)</label><input type="number" class="form-input" id="proj-budget" placeholder="0"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="proj-status">
+        <option value="active">Active / चालू</option>
+        <option value="completed">Completed / पूर्ण</option>
+        <option value="pending">Pending / प्रलंबित</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-input" id="proj-notes" rows="2"></textarea></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveProject()">💾 Save</button>
+      <button class="btn btn-secondary" onclick="closeModal('project-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Customer Modal -->
+<div class="modal-overlay" id="customer-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title">👤 ग्राहक Add करा</div>
+      <button class="modal-close" onclick="closeModal('customer-modal')">✕</button>
+    </div>
+    <input type="hidden" id="cust-edit-id">
+    <div class="form-group"><label class="form-label">नाव *</label><input type="text" class="form-input" id="cust-name" placeholder="ग्राहकाचे नाव"></div>
+    <div class="form-group"><label class="form-label">मोबाइल *</label><input type="tel" class="form-input" id="cust-mobile" placeholder="9876543210"></div>
+    <div class="form-group"><label class="form-label">पत्ता</label><textarea class="form-input" id="cust-address" rows="2" placeholder="पत्ता..."></textarea></div>
+    <div class="form-group"><label class="form-label">थकबाकी (₹)</label><input type="number" class="form-input" id="cust-pending" placeholder="0"></div>
+    <div class="form-group"><label class="form-label">Notes</label><input type="text" class="form-input" id="cust-notes" placeholder="टिपणी..."></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveCustomer()">💾 Save</button>
+      <button class="btn btn-secondary" onclick="closeModal('customer-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Supplier Modal -->
+<div class="modal-overlay" id="supplier-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title">🏭 पुरवठादार Add करा</div>
+      <button class="modal-close" onclick="closeModal('supplier-modal')">✕</button>
+    </div>
+    <input type="hidden" id="supp-edit-id">
+    <div class="form-group"><label class="form-label">नाव *</label><input type="text" class="form-input" id="supp-name" placeholder="पुरवठादाराचे नाव"></div>
+    <div class="form-group"><label class="form-label">मोबाइल</label><input type="tel" class="form-input" id="supp-mobile" placeholder="9876543210"></div>
+    <div class="form-group"><label class="form-label">साहित्य प्रकार</label><input type="text" class="form-input" id="supp-material" placeholder="SS Pipe, Glass, Hardware"></div>
+    <div class="form-group"><label class="form-label">पत्ता</label><input type="text" class="form-input" id="supp-address" placeholder="पत्ता"></div>
+    <div class="form-group"><label class="form-label">थकबाकी (₹)</label><input type="number" class="form-input" id="supp-pending" placeholder="0"></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveSupplier()">💾 Save</button>
+      <button class="btn btn-secondary" onclick="closeModal('supplier-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inventory Modal -->
+<div class="modal-overlay" id="inventory-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title">📦 साठा Add करा</div>
+      <button class="modal-close" onclick="closeModal('inventory-modal')">✕</button>
+    </div>
+    <input type="hidden" id="inv-item-edit-id">
+    <div class="form-group"><label class="form-label">Item नाव *</label><input type="text" class="form-input" id="inv-item-name" placeholder="e.g. 50mm SS Pipe"></div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select class="form-select" id="inv-item-type">
+        <option value="pipe">Pipe / पाईप</option>
+        <option value="glass">Glass / काच</option>
+        <option value="accessories">Accessories</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Quantity</label><input type="number" class="form-input" id="inv-item-qty" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Unit</label><select class="form-select" id="inv-item-unit"><option>pcs</option><option>kg</option><option>meter</option><option>feet</option><option>sqft</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Rate (₹/unit)</label><input type="number" class="form-input" id="inv-item-rate" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Min Stock Alert</label><input type="number" class="form-input" id="inv-item-min" placeholder="5"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveInventoryItem()">💾 Save</button>
+      <button class="btn btn-secondary" onclick="closeModal('inventory-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Labour Modal -->
+<div class="modal-overlay" id="labour-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title">👷 कामगार Add करा</div>
+      <button class="modal-close" onclick="closeModal('labour-modal')">✕</button>
+    </div>
+    <input type="hidden" id="lab-edit-id">
+    <div class="form-group"><label class="form-label">नाव *</label><input type="text" class="form-input" id="lab-name" placeholder="कामगाराचे नाव"></div>
+    <div class="form-group"><label class="form-label">मोबाइल</label><input type="tel" class="form-input" id="lab-mobile" placeholder="9876543210"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Daily Wages (₹)</label><input type="number" class="form-input" id="lab-wage" placeholder="500"></div>
+      <div class="form-group"><label class="form-label">Role / काम</label><input type="text" class="form-input" id="lab-role" placeholder="Welder, Helper..."></div>
+    </div>
+    <div class="form-group"><label class="form-label">पत्ता</label><input type="text" class="form-input" id="lab-address" placeholder="पत्ता"></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveLabour()">💾 Save</button>
+      <button class="btn btn-secondary" onclick="closeModal('labour-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reminder Modal -->
+<div class="modal-overlay" id="reminder-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title">🔔 Reminder जोडा</div>
+      <button class="modal-close" onclick="closeModal('reminder-modal')">✕</button>
+    </div>
+    <div class="form-group"><label class="form-label">Title *</label><input type="text" class="form-input" id="rem-title" placeholder="e.g. Payment collect from Sharma"></div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select class="form-select" id="rem-type">
+        <option value="payment">Payment Reminder</option>
+        <option value="gst">GST Due</option>
+        <option value="supplier">Supplier Payment</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Due Date</label><input type="date" class="form-input" id="rem-date"></div>
+      <div class="form-group"><label class="form-label">Amount (₹)</label><input type="number" class="form-input" id="rem-amount" placeholder="0"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><input type="text" class="form-input" id="rem-notes"></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveReminder()">💾 Save</button>
+      <button class="btn btn-secondary" onclick="closeModal('reminder-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Project Detail Modal -->
+<div class="modal-overlay" id="project-detail-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title" id="pd-title">Project Details</div>
+      <button class="modal-close" onclick="closeModal('project-detail-modal')">✕</button>
+    </div>
+    <div id="project-detail-content"></div>
+  </div>
+</div>
+
+<!-- Customer Detail Modal -->
+<div class="modal-overlay" id="customer-detail-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title" id="cd-title">Customer Details</div>
+      <button class="modal-close" onclick="closeModal('customer-detail-modal')">✕</button>
+    </div>
+    <div id="customer-detail-content"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+//  KRISHNA BUSINESS MANAGER — Core JavaScript
+// ════════════════════════════════════════════════════════════════
+
+// ── DB LAYER (localStorage) ──────────────────────────────────
+const DB = {
+  get(key) { try { return JSON.parse(localStorage.getItem('kbm_' + key)) || []; } catch { return []; } },
+  getObj(key, def = {}) { try { return JSON.parse(localStorage.getItem('kbm_' + key)) || def; } catch { return def; } },
+  set(key, val) { localStorage.setItem('kbm_' + key, JSON.stringify(val)); },
+  push(key, item) { const arr = DB.get(key); arr.push(item); DB.set(key, arr); return item; },
+  update(key, id, updates) {
+    const arr = DB.get(key);
+    const i = arr.findIndex(x => x.id === id);
+    if (i >= 0) { arr[i] = { ...arr[i], ...updates }; DB.set(key, arr); return true; }
+    return false;
+  },
+  delete(key, id) { DB.set(key, DB.get(key).filter(x => x.id !== id)); },
+  id() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+};
+
+// ── PIN LOCK ─────────────────────────────────────────────────
+let pinBuffer = '';
+const DEFAULT_PIN = '1234';
+
+function pinKey(k) {
+  if (k === 'bio') { tryBio(); return; }
+  if (k === 'del') { pinBuffer = pinBuffer.slice(0, -1); updateDots(); return; }
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += k;
+  updateDots();
+  if (pinBuffer.length === 4) setTimeout(checkPin, 100);
+}
+function updateDots() {
+  for (let i = 0; i < 4; i++)
+    document.getElementById('d' + i).classList.toggle('filled', i < pinBuffer.length);
+}
+function checkPin() {
+  const stored = DB.getObj('settings').pin || DEFAULT_PIN;
+  if (pinBuffer === stored) { unlockApp(); }
+  else {
+    document.getElementById('lock-error').textContent = '❌ चुकीचा PIN!';
+    pinBuffer = ''; updateDots();
+    setTimeout(() => document.getElementById('lock-error').textContent = '', 1500);
+  }
+}
+function unlockApp() {
+  document.getElementById('lock-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  initApp();
+}
+function skipLock() { unlockApp(); }
+async function tryBio() {
+  if (!window.PublicKeyCredential) { showToast('Biometric not supported', 'error'); return; }
+  showToast('Fingerprint support coming soon', 'error');
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+let currentPage = 'dashboard';
+let currentTheme = localStorage.getItem('kbm_theme') || 'dark';
+
+function initApp() {
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  updateThemeBtn();
+  setTodayDate();
+  loadSettings();
+  renderDashboard();
+  // Init report month
+  const now = new Date();
+  const ym = now.toISOString().slice(0, 7);
+  const el = document.getElementById('rep-month');
+  if (el) el.value = ym;
+  // Init quotation & invoice date
+  const today = now.toISOString().slice(0, 10);
+  ['q-date', 'inv-date', 'att-date'].forEach(id => {
+    const e = document.getElementById(id);
+    if (e) e.value = today;
+  });
+  // Init invoice number
+  const invNums = DB.get('invoices').length + 1;
+  document.getElementById('inv-no').value = 'KSR-' + String(invNums).padStart(3, '0');
+  // Register SW
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+  // Request notification permission
+  if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+  // Check reminders
+  checkReminders();
+}
+
+function setTodayDate() {
+  const now = new Date();
+  const days = ['रविवार','सोमवार','मंगळवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+  const months = ['जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर'];
+  const ds = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  const el = document.getElementById('today-date-display');
+  if (el) el.textContent = ds;
+  const h = now.getHours();
+  const greet = h < 12 ? 'शुभ सकाळ 🌅' : h < 17 ? 'नमस्कार 🙏' : 'शुभ संध्या 🌆';
+  const wm = document.getElementById('welcome-msg');
+  const settings = DB.getObj('settings');
+  if (wm) wm.textContent = greet + (settings.ownerName ? `, ${settings.ownerName}` : '');
+}
+
+function loadSettings() {
+  const s = DB.getObj('settings');
+  setVal('s-biz-name', s.bizName || 'Krishna Steel Railing & Furniture');
+  setVal('s-owner-name', s.ownerName || '');
+  setVal('s-phone', s.phone || '');
+  setVal('s-address', s.address || '');
+  setVal('s-gstin', s.gstin || '');
+  setVal('s-cash', s.cash || 0);
+  setVal('s-bank', s.bank || 0);
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────
+const PAGE_TITLES = {
+  dashboard: 'Dashboard', expenses: 'खर्च', income: 'उत्पन्न',
+  projects: 'प्रकल्प', customers: 'ग्राहक', suppliers: 'पुरवठादार',
+  inventory: 'साठा', labour: 'कामगार', quotation: 'Quotation',
+  invoice: 'Invoice', reports: 'Reports', calculators: 'Calculators',
+  reminders: 'Reminders', backup: 'Backup', settings: 'Settings'
+};
+const NAV_PAGES = ['dashboard', 'expenses', 'income', 'projects'];
+
+function navTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + page);
+  if (pg) pg.classList.add('active');
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const ni = document.getElementById('nav-' + page);
+  if (ni) ni.classList.add('active');
+  document.getElementById('header-subtitle').textContent = PAGE_TITLES[page] || page;
+  // Render page
+  renderPage(page);
+  closeMoreMenu();
+  window.scrollTo(0, 0);
+}
+
+function renderPage(page) {
+  switch (page) {
+    case 'dashboard': renderDashboard(); break;
+    case 'expenses': renderExpenses(); break;
+    case 'income': renderIncome(); break;
+    case 'projects': renderProjects(); break;
+    case 'customers': renderCustomers(); break;
+    case 'suppliers': renderSuppliers(); break;
+    case 'inventory': renderInventory(); break;
+    case 'labour': renderLabour(); break;
+    case 'reports': renderReports(); break;
+    case 'reminders': renderReminders(); break;
+    case 'backup': renderBackup(); break;
+    case 'quotation': initQuotation(); break;
+    case 'invoice': initInvoice(); break;
+  }
+}
+
+function fabAction() {
+  const actions = {
+    dashboard: () => openModal('expense-modal'),
+    expenses: () => openModal('expense-modal'),
+    income: () => openModal('income-modal'),
+    projects: () => openModal('project-modal'),
+    customers: () => openModal('customer-modal'),
+    suppliers: () => openModal('supplier-modal'),
+    inventory: () => openModal('inventory-modal'),
+    labour: () => openModal('labour-modal'),
+    reminders: () => openModal('reminder-modal'),
+  };
+  (actions[currentPage] || (() => openModal('expense-modal')))();
+}
+
+// ── MORE MENU ─────────────────────────────────────────────────
+function toggleMoreMenu() {
+  document.getElementById('more-menu').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+function closeMoreMenu() {
+  document.getElementById('more-menu').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+function closeMoreAndGo(page) { closeMoreMenu(); navTo(page); }
+
+// ── MODALS ────────────────────────────────────────────────────
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (!m) return;
+  m.classList.add('open');
+  // Pre-fill date fields
+  const today = new Date().toISOString().slice(0, 10);
+  ['exp-date','inc-date'].forEach(fid => {
+    const e = document.getElementById(fid);
+    if (e && !e.value) e.value = today;
+  });
+  // Populate project selects
+  if (id === 'expense-modal' || id === 'income-modal') populateProjectSelects();
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  resetModal(id);
+}
+function resetModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.querySelectorAll('input:not([type=hidden]), textarea, select').forEach(el => {
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  const pp = document.getElementById('exp-photo-preview');
+  if (pp) pp.innerHTML = '📸';
+  document.getElementById('exp-edit-id') && (document.getElementById('exp-edit-id').value = '');
+  document.getElementById('inc-edit-id') && (document.getElementById('inc-edit-id').value = '');
+}
+
+function populateProjectSelects() {
+  const projects = DB.get('projects');
+  const opts = '<option value="">-- प्रकल्प निवडा --</option>' +
+    projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  ['exp-project', 'inc-project-link'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = opts;
+  });
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.className = '', 2500);
+}
+
+// ── THEME ─────────────────────────────────────────────────────
+function toggleTheme() {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  localStorage.setItem('kbm_theme', currentTheme);
+  updateThemeBtn();
+}
+function updateThemeBtn() {
+  const btns = document.querySelectorAll('#theme-toggle-btn');
+  btns.forEach(b => b.textContent = currentTheme === 'dark' ? '🌙 Dark' : '☀️ Light');
+  document.querySelector('#top-header .icon-btn').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function fmt(n) { return '₹' + (parseFloat(n) || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 }); }
+function setVal(id, val) { const e = document.getElementById(id); if (e) e.value = val ?? ''; }
+function getVal(id) { const e = document.getElementById(id); return e ? e.value.trim() : ''; }
+function getNum(id) { return parseFloat(getVal(id)) || 0; }
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+function monthStr(dateStr) { return (dateStr || '').slice(0, 7); }
+function currMonth() { return new Date().toISOString().slice(0, 7); }
+function catIcon(cat) {
+  const icons = { Material:'🔩', Labour:'👷', Diesel:'⛽', Tea:'☕', Transport:'🚛',
+    'Machine Repair':'🔧', Electricity:'⚡', Other:'📌' };
+  return icons[cat] || '📌';
+}
+function catColor(cat) {
+  const cols = { Material:'#3498db', Labour:'#e74c3c', Diesel:'#e67e22', Tea:'#2ecc71',
+    Transport:'#9b59b6', 'Machine Repair':'#1abc9c', Electricity:'#f39c12', Other:'#95a5a6' };
+  return cols[cat] || '#95a5a6';
+}
+function statusBadge(s) {
+  const map = { active:'<span class="badge badge-success">Active</span>',
+    completed:'<span class="badge badge-info">Completed</span>',
+    pending:'<span class="badge badge-warning">Pending</span>',
+    cancelled:'<span class="badge badge-danger">Cancelled</span>' };
+  return map[s] || '';
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+function renderDashboard() {
+  const expenses = DB.get('expenses');
+  const incomes = DB.get('incomes');
+  const today = todayStr();
+  const month = currMonth();
+  const s = DB.getObj('settings');
+
+  const todayExp = expenses.filter(e => e.date === today).reduce((a, e) => a + e.amount, 0);
+  const monthExp = expenses.filter(e => monthStr(e.date) === month).reduce((a, e) => a + e.amount, 0);
+  const monthInc = incomes.filter(i => monthStr(i.date) === month).reduce((a, i) => a + i.amount, 0);
+  const pending = incomes.reduce((a, i) => a + (i.pending || 0), 0) +
+    DB.get('customers').reduce((a, c) => a + (c.pending || 0), 0);
+  const pl = monthInc - monthExp;
+
+  setVal('', ''); // noop
+  setText('dash-today-exp', fmt(todayExp));
+  setText('dash-income', fmt(monthInc));
+  setText('dash-expense', fmt(monthExp));
+  setText('dash-pending', fmt(pending));
+  const plEl = document.getElementById('dash-pl');
+  if (plEl) {
+    plEl.textContent = fmt(Math.abs(pl));
+    plEl.className = 'pl-display ' + (pl >= 0 ? 'profit' : 'loss');
+    plEl.textContent = (pl >= 0 ? '▲ ' : '▼ ') + fmt(Math.abs(pl));
+  }
+  setText('dash-cash', fmt(s.cash || 0));
+  setText('dash-bank', fmt(s.bank || 0));
+  setText('dash-projects', DB.get('projects').length);
+  setText('dash-customers', DB.get('customers').length);
+
+  // Recent expenses
+  const recentExp = expenses.slice(-5).reverse();
+  const rl = document.getElementById('recent-expenses-list');
+  if (rl) rl.innerHTML = recentExp.length ? recentExp.map(e => listItemHTML(
+    `<div class="list-icon" style="background:${catColor(e.category)}22">${catIcon(e.category)}</div>`,
+    e.name, e.category + (e.projectName ? ' · ' + e.projectName : ''),
+    `<div class="amount expense">${fmt(e.amount)}</div><div class="date">${e.date}</div>`
+  )).join('') : '<div class="empty-state"><p>खर्च नाही</p></div>';
+
+  // Recent income
+  const recentInc = incomes.slice(-5).reverse();
+  const il = document.getElementById('recent-income-list');
+  if (il) il.innerHTML = recentInc.length ? recentInc.map(i => listItemHTML(
+    `<div class="list-icon" style="background:#2ecc7122">💰</div>`,
+    i.customer, i.projectName + ' · ' + i.mode,
+    `<div class="amount income">${fmt(i.amount)}</div><div class="date">${i.date}</div>`
+  )).join('') : '<div class="empty-state"><p>उत्पन्न नाही</p></div>';
+}
+
+function setText(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
+function listItemHTML(icon, title, sub, right) {
+  return `<div class="list-item">${icon}<div class="list-body"><div class="list-title">${title}</div><div class="list-sub">${sub}</div></div><div class="list-amount">${right}</div></div>`;
+}
+
+// ── EXPENSE MANAGEMENT ────────────────────────────────────────
+let expCurrentCat = 'all';
+
+function saveExpense() {
+  const name = getVal('exp-name'), amount = getNum('exp-amount'), date = getVal('exp-date');
+  if (!name || !amount || !date) { showToast('सर्व माहिती भरा *', 'error'); return; }
+  const editId = getVal('exp-edit-id');
+  const projId = getVal('exp-project');
+  const projects = DB.get('projects');
+  const proj = projects.find(p => p.id === projId);
+  const record = {
+    id: editId || DB.id(), name, amount, date,
+    category: getVal('exp-cat') || 'Other',
+    projectId: projId, projectName: proj ? proj.name : '',
+    notes: getVal('exp-notes'), photo: window._expPhoto || null,
+    createdAt: new Date().toISOString()
+  };
+  if (editId) DB.update('expenses', editId, record);
+  else DB.push('expenses', record);
+  window._expPhoto = null;
+  closeModal('expense-modal');
+  showToast('खर्च साठवला ✓', 'success');
+  renderExpenses();
+  if (currentPage === 'dashboard') renderDashboard();
+}
+
+function renderExpenses(filter = expCurrentCat) {
+  let expenses = DB.get('expenses');
+  const search = getVal('exp-search').toLowerCase();
+  if (search) expenses = expenses.filter(e => e.name.toLowerCase().includes(search) || e.category.toLowerCase().includes(search));
+  if (filter !== 'all') expenses = expenses.filter(e => e.category === filter);
+  expenses = expenses.sort((a, b) => b.date.localeCompare(a.date));
+
+  const today = todayStr(), month = currMonth();
+  const allExp = DB.get('expenses');
+  setText('exp-today-total', fmt(allExp.filter(e => e.date === today).reduce((a, e) => a + e.amount, 0)));
+  setText('exp-month-total', fmt(allExp.filter(e => monthStr(e.date) === month).reduce((a, e) => a + e.amount, 0)));
+
+  const c = document.getElementById('expense-list-container');
+  if (!c) return;
+  if (!expenses.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><h3>खर्च नाही</h3><p>+ बटण दाबून खर्च Add करा</p></div>';
+    return;
+  }
+  c.innerHTML = expenses.map(e => `
+    <div class="list-item" onclick="editExpense('${e.id}')">
+      <div class="list-icon" style="background:${catColor(e.category)}22">${catIcon(e.category)}</div>
+      <div class="list-body">
+        <div class="list-title">${e.name}</div>
+        <div class="list-sub">${e.category}${e.projectName ? ' · ' + e.projectName : ''} · ${e.date}</div>
+      </div>
+      <div class="list-amount">
+        <div class="amount expense">${fmt(e.amount)}</div>
+        <div style="display:flex;gap:4px;margin-top:4px;justify-content:flex-end">
+          <button class="btn btn-sm" style="padding:3px 6px" onclick="event.stopPropagation();editExpense('${e.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" style="padding:3px 6px" onclick="event.stopPropagation();deleteExpense('${e.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterExpenses() { renderExpenses(expCurrentCat); }
+function filterExpCat(cat, btn) {
+  expCurrentCat = cat;
+  document.querySelectorAll('#exp-cat-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderExpenses(cat);
+}
+function editExpense(id) {
+  const e = DB.get('expenses').find(x => x.id === id);
+  if (!e) return;
+  openModal('expense-modal');
+  setTimeout(() => {
+    document.getElementById('exp-edit-id').value = e.id;
+    setVal('exp-name', e.name); setVal('exp-amount', e.amount);
+    setVal('exp-date', e.date); setVal('exp-cat', e.category);
+    setVal('exp-notes', e.notes); setVal('exp-project', e.projectId);
+    if (e.photo) {
+      window._expPhoto = e.photo;
+      document.getElementById('exp-photo-preview').innerHTML = `<img src="${e.photo}" style="width:100%;height:100%;object-fit:cover">`;
+    }
+  }, 100);
+}
+function deleteExpense(id) {
+  if (!confirm('हा खर्च Delete करायचा आहे का?')) return;
+  DB.delete('expenses', id);
+  showToast('खर्च Delete केला', 'error');
+  renderExpenses();
+  if (currentPage === 'dashboard') renderDashboard();
+}
+function previewBill(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    window._expPhoto = ev.target.result;
+    document.getElementById('exp-photo-preview').innerHTML =
+      `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── INCOME MANAGEMENT ─────────────────────────────────────────
+function saveIncome() {
+  const customer = getVal('inc-customer'), amount = getNum('inc-amount'), date = getVal('inc-date');
+  if (!customer || !amount || !date) { showToast('सर्व माहिती भरा *', 'error'); return; }
+  const editId = getVal('inc-edit-id');
+  const record = {
+    id: editId || DB.id(), customer, amount, date,
+    projectName: getVal('inc-project-name'),
+    mode: getVal('inc-mode') || 'Cash',
+    pending: getNum('inc-pending'),
+    projectId: getVal('inc-project-link'),
+    notes: getVal('inc-notes'),
+    createdAt: new Date().toISOString()
+  };
+  if (editId) DB.update('incomes', editId, record);
+  else DB.push('incomes', record);
+  closeModal('income-modal');
+  showToast('उत्पन्न साठवले ✓', 'success');
+  renderIncome();
+  if (currentPage === 'dashboard') renderDashboard();
+}
+
+function renderIncome() {
+  const incomes = DB.get('incomes').sort((a, b) => b.date.localeCompare(a.date));
+  const today = todayStr(), month = currMonth();
+  setText('inc-today-total', fmt(incomes.filter(i => i.date === today).reduce((a, i) => a + i.amount, 0)));
+  setText('inc-month-total', fmt(incomes.filter(i => monthStr(i.date) === month).reduce((a, i) => a + i.amount, 0)));
+  const c = document.getElementById('income-list-container');
+  if (!c) return;
+  if (!incomes.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">💸</div><h3>उत्पन्न नाही</h3><p>+ बटण दाबून उत्पन्न Add करा</p></div>';
+    return;
+  }
+  c.innerHTML = incomes.map(i => `
+    <div class="list-item" onclick="editIncome('${i.id}')">
+      <div class="list-icon" style="background:#2ecc7122">💰</div>
+      <div class="list-body">
+        <div class="list-title">${i.customer}</div>
+        <div class="list-sub">${i.projectName || 'General'} · ${i.mode} · ${i.date}</div>
+        ${i.pending > 0 ? `<span class="badge badge-warning" style="margin-top:4px">Pending: ${fmt(i.pending)}</span>` : ''}
+      </div>
+      <div class="list-amount">
+        <div class="amount income">${fmt(i.amount)}</div>
+        <div style="display:flex;gap:4px;margin-top:4px;justify-content:flex-end">
+          <button class="btn btn-sm" style="padding:3px 6px" onclick="event.stopPropagation();editIncome('${i.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" style="padding:3px 6px" onclick="event.stopPropagation();deleteIncome('${i.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function editIncome(id) {
+  const i = DB.get('incomes').find(x => x.id === id);
+  if (!i) return;
+  openModal('income-modal');
+  setTimeout(() => {
+    document.getElementById('inc-edit-id').value = i.id;
+    setVal('inc-customer', i.customer); setVal('inc-amount', i.amount);
+    setVal('inc-date', i.date); setVal('inc-project-name', i.projectName);
+    setVal('inc-mode', i.mode); setVal('inc-pending', i.pending);
+    setVal('inc-notes', i.notes);
+  }, 100);
+}
+function deleteIncome(id) {
+  if (!confirm('हे उत्पन्न Delete करायचे आहे का?')) return;
+  DB.delete('incomes', id);
+  showToast('उत्पन्न Delete केले', 'error');
+  renderIncome();
+}
+
+// ── PROJECT MANAGEMENT ────────────────────────────────────────
+function saveProject() {
+  const name = getVal('proj-name');
+  if (!name) { showToast('प्रकल्पाचे नाव लिहा', 'error'); return; }
+  const editId = getVal('proj-edit-id');
+  const record = {
+    id: editId || DB.id(), name,
+    customer: getVal('proj-customer'), location: getVal('proj-location'),
+    startDate: getVal('proj-start'), budget: getNum('proj-budget'),
+    status: getVal('proj-status') || 'active',
+    notes: getVal('proj-notes'),
+    createdAt: new Date().toISOString()
+  };
+  if (editId) DB.update('projects', editId, record);
+  else DB.push('projects', record);
+  closeModal('project-modal');
+  showToast('प्रकल्प साठवला ✓', 'success');
+  renderProjects();
+}
+
+function renderProjects(search = '') {
+  let projects = DB.get('projects');
+  if (search) projects = projects.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || (p.customer || '').toLowerCase().includes(search.toLowerCase()));
+  const c = document.getElementById('project-list-container');
+  if (!c) return;
+  if (!projects.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">🏗️</div><h3>प्रकल्प नाही</h3><p>+ बटण दाबून प्रकल्प तयार करा</p></div>';
+    return;
+  }
+  const expenses = DB.get('expenses'), incomes = DB.get('incomes');
+  c.innerHTML = projects.map(p => {
+    const pExp = expenses.filter(e => e.projectId === p.id).reduce((a, e) => a + e.amount, 0);
+    const pInc = incomes.filter(i => i.projectId === p.id).reduce((a, i) => a + i.amount, 0);
+    const pl = pInc - pExp;
+    return `<div class="card" style="margin-bottom:10px;cursor:pointer" onclick="showProjectDetail('${p.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <div style="font-size:15px;font-weight:700">${p.name}</div>
+          <div style="font-size:12px;color:var(--text-secondary)">${p.customer || ''} ${p.location ? '· ' + p.location : ''}</div>
+        </div>
+        ${statusBadge(p.status)}
+      </div>
+      <div style="display:flex;gap:12px;font-size:12px">
+        <div><span style="color:var(--text-muted)">Income: </span><span style="color:var(--success);font-weight:600">${fmt(pInc)}</span></div>
+        <div><span style="color:var(--text-muted)">Expense: </span><span style="color:var(--danger);font-weight:600">${fmt(pExp)}</span></div>
+        <div><span style="color:var(--text-muted)">P/L: </span><span style="color:${pl>=0?'var(--success)':'var(--danger)'};font-weight:700">${fmt(pl)}</span></div>
+      </div>
+      ${p.budget ? `<div style="margin-top:8px"><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Budget: ${fmt(p.budget)}</div><div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100,(pInc/p.budget)*100)}%;background:var(--gold)"></div></div></div>` : ''}
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();editProject('${p.id}')">✏️ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteProject('${p.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function filterProjects(v) { renderProjects(v); }
+function editProject(id) {
+  const p = DB.get('projects').find(x => x.id === id);
+  if (!p) return;
+  openModal('project-modal');
+  setTimeout(() => {
+    document.getElementById('proj-edit-id').value = p.id;
+    setVal('proj-name', p.name); setVal('proj-customer', p.customer);
+    setVal('proj-location', p.location); setVal('proj-start', p.startDate);
+    setVal('proj-budget', p.budget); setVal('proj-status', p.status);
+    setVal('proj-notes', p.notes);
+  }, 100);
+}
+function deleteProject(id) {
+  if (!confirm('हा प्रकल्प Delete करायचा आहे का?')) return;
+  DB.delete('projects', id);
+  showToast('प्रकल्प Delete केला', 'error');
+  renderProjects();
+}
+function showProjectDetail(id) {
+  const p = DB.get('projects').find(x => x.id === id);
+  if (!p) return;
+  const expenses = DB.get('expenses').filter(e => e.projectId === id);
+  const incomes = DB.get('incomes').filter(i => i.projectId === id);
+  const totalExp = expenses.reduce((a, e) => a + e.amount, 0);
+  const totalInc = incomes.reduce((a, i) => a + i.amount, 0);
+  document.getElementById('pd-title').textContent = p.name;
+  document.getElementById('project-detail-content').innerHTML = `
+    <div style="margin-bottom:16px">
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        ${statusBadge(p.status)}
+        ${p.customer ? `<span class="badge badge-gold">👤 ${p.customer}</span>` : ''}
+      </div>
+      ${p.location ? `<div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">📍 ${p.location}</div>` : ''}
+      ${p.startDate ? `<div style="font-size:12px;color:var(--text-secondary)">📅 Start: ${p.startDate}</div>` : ''}
+    </div>
+    <div class="stat-grid" style="margin-bottom:16px">
+      <div class="stat-card green"><div class="stat-icon">💰</div><div class="stat-label">Income</div><div class="stat-value">${fmt(totalInc)}</div></div>
+      <div class="stat-card red"><div class="stat-icon">💸</div><div class="stat-label">Expense</div><div class="stat-value">${fmt(totalExp)}</div></div>
+    </div>
+    <div class="card" style="margin-bottom:12px;border-color:${totalInc-totalExp>=0?'var(--success)':'var(--danger)'}">
+      <div style="text-align:center">
+        <div style="font-size:12px;color:var(--text-muted)">नफा / तोटा</div>
+        <div style="font-size:24px;font-weight:800;color:${totalInc-totalExp>=0?'var(--success)':'var(--danger)'}">${fmt(totalInc - totalExp)}</div>
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:8px">Expenses</div>
+    <div class="card" style="margin-bottom:12px">
+      ${expenses.length ? expenses.map(e => `<div class="list-item"><div class="list-icon" style="background:${catColor(e.category)}22">${catIcon(e.category)}</div><div class="list-body"><div class="list-title">${e.name}</div><div class="list-sub">${e.category} · ${e.date}</div></div><div class="amount expense">${fmt(e.amount)}</div></div>`).join('') : '<p style="color:var(--text-muted);font-size:13px;padding:8px 0">खर्च नाही</p>'}
+    </div>
+    <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:8px">Income</div>
+    <div class="card">
+      ${incomes.length ? incomes.map(i => `<div class="list-item"><div class="list-icon" style="background:#2ecc7122">💰</div><div class="list-body"><div class="list-title">${i.customer}</div><div class="list-sub">${i.mode} · ${i.date}</div></div><div class="amount income">${fmt(i.amount)}</div></div>`).join('') : '<p style="color:var(--text-muted);font-size:13px;padding:8px 0">उत्पन्न नाही</p>'}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-primary" style="flex:1" onclick="closeModal('project-detail-modal');editProject('${p.id}')">✏️ Edit</button>
+    </div>`;
+  openModal('project-detail-modal');
+}
+
+// ── CUSTOMER MANAGEMENT ───────────────────────────────────────
+function saveCustomer() {
+  const name = getVal('cust-name');
+  if (!name) { showToast('नाव लिहा', 'error'); return; }
+  const editId = getVal('cust-edit-id');
+  const record = {
+    id: editId || DB.id(), name,
+    mobile: getVal('cust-mobile'), address: getVal('cust-address'),
+    pending: getNum('cust-pending'), notes: getVal('cust-notes'),
+    createdAt: new Date().toISOString()
+  };
+  if (editId) DB.update('customers', editId, record);
+  else DB.push('customers', record);
+  closeModal('customer-modal');
+  showToast('ग्राहक साठवला ✓', 'success');
+  renderCustomers();
+}
+function renderCustomers(search = '') {
+  let customers = DB.get('customers');
+  if (search) customers = customers.filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || (c.mobile || '').includes(search));
+  const c = document.getElementById('customer-list-container');
+  if (!c) return;
+  if (!customers.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">👤</div><h3>ग्राहक नाही</h3><p>+ बटण दाबून ग्राहक Add करा</p></div>';
+    return;
+  }
+  c.innerHTML = customers.map(cust => `
+    <div class="card" style="margin-bottom:10px;cursor:pointer" onclick="showCustomerDetail('${cust.id}')">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dim));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#000;flex-shrink:0">${cust.name[0].toUpperCase()}</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700">${cust.name}</div>
+          <div style="font-size:12px;color:var(--text-secondary)">${cust.mobile || ''}</div>
+          ${cust.pending > 0 ? `<span class="badge badge-warning" style="margin-top:3px">Pending: ${fmt(cust.pending)}</span>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+          ${cust.mobile ? `<a href="tel:${cust.mobile}" onclick="event.stopPropagation()" class="btn btn-success btn-sm">📞</a>` : ''}
+          <button class="btn btn-sm" style="padding:3px 6px" onclick="event.stopPropagation();editCustomer('${cust.id}')">✏️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function filterCustomers(v) { renderCustomers(v); }
+function editCustomer(id) {
+  const c = DB.get('customers').find(x => x.id === id);
+  if (!c) return;
+  openModal('customer-modal');
+  setTimeout(() => {
+    document.getElementById('cust-edit-id').value = c.id;
+    setVal('cust-name', c.name); setVal('cust-mobile', c.mobile);
+    setVal('cust-address', c.address); setVal('cust-pending', c.pending);
+    setVal('cust-notes', c.notes);
+  }, 100);
+}
+function showCustomerDetail(id) {
+  const c = DB.get('customers').find(x => x.id === id);
+  if (!c) return;
+  const incomes = DB.get('incomes').filter(i => i.customer === c.name);
+  const total = incomes.reduce((a, i) => a + i.amount, 0);
+  document.getElementById('cd-title').textContent = c.name;
+  document.getElementById('customer-detail-content').innerHTML = `
+    <div style="margin-bottom:16px">
+      ${c.mobile ? `<div style="font-size:13px;margin-bottom:4px">📱 <a href="tel:${c.mobile}" style="color:var(--gold)">${c.mobile}</a></div>` : ''}
+      ${c.address ? `<div style="font-size:13px;color:var(--text-secondary)">📍 ${c.address}</div>` : ''}
+    </div>
+    <div class="stat-grid" style="margin-bottom:16px">
+      <div class="stat-card green"><div class="stat-icon">💰</div><div class="stat-label">Total Paid</div><div class="stat-value">${fmt(total)}</div></div>
+      <div class="stat-card orange"><div class="stat-icon">⏳</div><div class="stat-label">Pending</div><div class="stat-value">${fmt(c.pending)}</div></div>
+    </div>
+    <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:8px">Payment History</div>
+    <div class="card">
+      ${incomes.length ? incomes.map(i => `<div class="list-item"><div class="list-icon" style="background:#2ecc7122">💰</div><div class="list-body"><div class="list-title">${i.projectName || 'Payment'}</div><div class="list-sub">${i.mode} · ${i.date}</div></div><div class="amount income">${fmt(i.amount)}</div></div>`).join('') : '<p style="color:var(--text-muted);font-size:13px;padding:8px 0">इतिहास नाही</p>'}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-primary" style="flex:1" onclick="closeModal('customer-detail-modal');editCustomer('${c.id}')">✏️ Edit</button>
+      <button class="btn btn-danger" onclick="closeModal('customer-detail-modal');deleteCustomer('${c.id}')">🗑️</button>
+    </div>`;
+  openModal('customer-detail-modal');
+}
+function deleteCustomer(id) {
+  if (!confirm('हा ग्राहक Delete करायचा आहे का?')) return;
+  DB.delete('customers', id);
+  showToast('ग्राहक Delete केला', 'error');
+  renderCustomers();
+}
+
+// ── SUPPLIER MANAGEMENT ───────────────────────────────────────
+function saveSupplier() {
+  const name = getVal('supp-name');
+  if (!name) { showToast('नाव लिहा', 'error'); return; }
+  const editId = getVal('supp-edit-id');
+  const record = {
+    id: editId || DB.id(), name,
+    mobile: getVal('supp-mobile'), material: getVal('supp-material'),
+    address: getVal('supp-address'), pending: getNum('supp-pending'),
+    createdAt: new Date().toISOString()
+  };
+  if (editId) DB.update('suppliers', editId, record);
+  else DB.push('suppliers', record);
+  closeModal('supplier-modal');
+  showToast('पुरवठादार साठवला ✓', 'success');
+  renderSuppliers();
+}
+function renderSuppliers(search = '') {
+  let suppliers = DB.get('suppliers');
+  if (search) suppliers = suppliers.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
+  const c = document.getElementById('supplier-list-container');
+  if (!c) return;
+  if (!suppliers.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">🏭</div><h3>पुरवठादार नाही</h3></div>';
+    return;
+  }
+  c.innerHTML = suppliers.map(s => `
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--bg-card2);display:flex;align-items:center;justify-content:center;font-size:22px">🏭</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700">${s.name}</div>
+          <div style="font-size:12px;color:var(--text-secondary)">${s.material || ''} ${s.mobile ? '· 📱 ' + s.mobile : ''}</div>
+          ${s.pending > 0 ? `<span class="badge badge-danger" style="margin-top:3px">Due: ${fmt(s.pending)}</span>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          ${s.mobile ? `<a href="tel:${s.mobile}" class="btn btn-success btn-sm">📞</a>` : ''}
+          <button class="btn btn-sm" style="padding:3px 6px" onclick="editSupplier('${s.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" style="padding:3px 6px" onclick="deleteSupplier('${s.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function filterSuppliers(v) { renderSuppliers(v); }
+function editSupplier(id) {
+  const s = DB.get('suppliers').find(x => x.id === id);
+  if (!s) return;
+  openModal('supplier-modal');
+  setTimeout(() => {
+    document.getElementById('supp-edit-id').value = s.id;
+    setVal('supp-name', s.name); setVal('supp-mobile', s.mobile);
+    setVal('supp-material', s.material); setVal('supp-address', s.address);
+    setVal('supp-pending', s.pending);
+  }, 100);
+}
+function deleteSupplier(id) {
+  if (!confirm('हा पुरवठादार Delete करायचा आहे का?')) return;
+  DB.delete('suppliers', id);
+  showToast('पुरवठादार Delete केला', 'error');
+  renderSuppliers();
+}
+
+// ── INVENTORY MANAGEMENT ──────────────────────────────────────
+function saveInventoryItem() {
+  const name = getVal('inv-item-name');
+  if (!name) { showToast('Item नाव लिहा', 'error'); return; }
+  const editId = getVal('inv-item-edit-id');
+  const record = {
+    id: editId || DB.id(), name, type: getVal('inv-item-type'),
+    qty: getNum('inv-item-qty'), unit: getVal('inv-item-unit') || 'pcs',
+    rate: getNum('inv-item-rate'), minStock: getNum('inv-item-min') || 5,
+    createdAt: new Date().toISOString()
+  };
+  if (editId) DB.update('inventory', editId, record);
+  else DB.push('inventory', record);
+  closeModal('inventory-modal');
+  showToast('साठा साठवला ✓', 'success');
+  renderInventory();
+}
+function renderInventory(filter = 'all') {
+  let items = DB.get('inventory');
+  if (filter !== 'all') items = items.filter(i => i.type === filter);
+  const c = document.getElementById('inventory-list-container');
+  if (!c) return;
+  const lowStock = items.filter(i => i.qty <= i.minStock);
+  const alertEl = document.getElementById('low-stock-alert');
+  const alertItems = document.getElementById('low-stock-items');
+  if (lowStock.length && alertEl) {
+    alertEl.style.display = 'block';
+    if (alertItems) alertItems.textContent = lowStock.map(i => i.name + ' (' + i.qty + ' ' + i.unit + ')').join(', ');
+  } else if (alertEl) alertEl.style.display = 'none';
+  if (!items.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">📦</div><h3>साठा नाही</h3></div>';
+    return;
+  }
+  c.innerHTML = items.map(item => `
+    <div class="stock-card">
+      <div class="stock-header">
+        <div>
+          <div class="stock-name">${item.name}</div>
+          <div style="font-size:12px;color:var(--text-secondary)">${item.type} · ${item.unit} · ₹${item.rate}/unit</div>
+        </div>
+        <div class="stock-qty ${item.qty <= item.minStock ? 'stock-low' : ''}">${item.qty} ${item.unit}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="flex:1">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${Math.min(100,(item.qty/Math.max(item.minStock*3,1))*100)}%;background:${item.qty<=item.minStock?'var(--danger)':'var(--success)'}"></div>
+          </div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">Min: ${item.minStock} ${item.unit} · Value: ${fmt(item.qty * item.rate)}</div>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-success btn-sm" onclick="adjustStock('${item.id}', 1)">+</button>
+          <button class="btn btn-danger btn-sm" onclick="adjustStock('${item.id}', -1)">-</button>
+          <button class="btn btn-sm" style="padding:3px 6px" onclick="editInventoryItem('${item.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" style="padding:3px 6px" onclick="deleteInventoryItem('${item.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function filterInv(f, btn) {
+  document.querySelectorAll('#page-inventory .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderInventory(f);
+}
+function adjustStock(id, delta) {
+  const item = DB.get('inventory').find(x => x.id === id);
+  if (!item) return;
+  const newQty = Math.max(0, item.qty + delta);
+  DB.update('inventory', id, { qty: newQty });
+  renderInventory();
+}
+function editInventoryItem(id) {
+  const item = DB.get('inventory').find(x => x.id === id);
+  if (!item) return;
+  openModal('inventory-modal');
+  setTimeout(() => {
+    document.getElementById('inv-item-edit-id').value = item.id;
+    setVal('inv-item-name', item.name); setVal('inv-item-type', item.type);
+    setVal('inv-item-qty', item.qty); setVal('inv-item-unit', item.unit);
+    setVal('inv-item-rate', item.rate); setVal('inv-item-min', item.minStock);
+  }, 100);
+}
+function deleteInventoryItem(id) {
+  if (!confirm('हा Item Delete करायचा आहे का?')) return;
+  DB.delete('inventory', id);
+  showToast('Item Delete केला', 'error');
+  renderInventory();
+}
+
+// ── LABOUR MANAGEMENT ─────────────────────────────────────────
+let labCurrentTab = 'list';
+function saveLabour() {
+  const name = getVal('lab-name');
+  if (!name) { showToast('नाव लिहा', 'error'); return; }
+  const editId = getVal('lab-edit-id');
+  const record = {
+    id: editId || DB.id(), name,
+    mobile: getVal('lab-mobile'), wage: getNum('lab-wage'),
+    role: getVal('lab-role'), address: getVal('lab-address'),
+    createdAt: new Date().toISOString()
+  };
+  if (editId) DB.update('labour', editId, record);
+  else DB.push('labour', record);
+  closeModal('labour-modal');
+  showToast('कामगार साठवला ✓', 'success');
+  renderLabour();
+}
+function labourTab(tab, btn) {
+  labCurrentTab = tab;
+  document.querySelectorAll('#page-labour .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('labour-list-container').style.display = tab === 'list' ? 'block' : 'none';
+  document.getElementById('attendance-container').style.display = tab === 'attendance' ? 'block' : 'none';
+  document.getElementById('wages-container').style.display = tab === 'wages' ? 'block' : 'none';
+  if (tab === 'attendance') renderAttendance();
+  if (tab === 'wages') renderWages();
+}
+function renderLabour() {
+  const workers = DB.get('labour');
+  const c = document.getElementById('labour-list-container');
+  if (!c) return;
+  if (!workers.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">👷</div><h3>कामगार नाही</h3><p>+ बटण दाबून कामगार Add करा</p></div>';
+    return;
+  }
+  c.innerHTML = workers.map(w => `
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--steel),var(--steel-light));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0">${w.name[0].toUpperCase()}</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700">${w.name}</div>
+          <div style="font-size:12px;color:var(--text-secondary)">${w.role || 'Helper'} · ₹${w.wage || 0}/day</div>
+          ${w.mobile ? `<div style="font-size:12px;color:var(--text-muted)">📱 ${w.mobile}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          ${w.mobile ? `<a href="tel:${w.mobile}" class="btn btn-success btn-sm">📞</a>` : ''}
+          <button class="btn btn-sm" style="padding:3px 6px" onclick="editLabour('${w.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" style="padding:3px 6px" onclick="deleteLabour('${w.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function editLabour(id) {
+  const w = DB.get('labour').find(x => x.id === id);
+  if (!w) return;
+  openModal('labour-modal');
+  setTimeout(() => {
+    document.getElementById('lab-edit-id').value = w.id;
+    setVal('lab-name', w.name); setVal('lab-mobile', w.mobile);
+    setVal('lab-wage', w.wage); setVal('lab-role', w.role);
+    setVal('lab-address', w.address);
+  }, 100);
+}
+function deleteLabour(id) {
+  if (!confirm('हा कामगार Delete करायचा आहे का?')) return;
+  DB.delete('labour', id);
+  showToast('कामगार Delete केला', 'error');
+  renderLabour();
+}
+function renderAttendance() {
+  const date = getVal('att-date') || todayStr();
+  const workers = DB.get('labour');
+  const att = DB.getObj('attendance');
+  const key = date;
+  if (!att[key]) att[key] = {};
+  const g = document.getElementById('attendance-grid');
+  if (!g) return;
+  if (!workers.length) { g.innerHTML = '<p style="color:var(--text-muted);font-size:13px">कामगार नाही</p>'; return; }
+  g.innerHTML = workers.map(w => {
+    const present = att[key][w.id] === true;
+    return `<div class="list-item">
+      <div class="list-icon" style="background:var(--bg-card2)">👷</div>
+      <div class="list-body"><div class="list-title">${w.name}</div><div class="list-sub">${w.role || ''} · ₹${w.wage}/day</div></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm ${present?'btn-success':'btn-secondary'}" onclick="markAttendance('${w.id}','${key}',true)" style="width:36px">✓</button>
+        <button class="btn btn-sm ${!present?'btn-danger':'btn-secondary'}" onclick="markAttendance('${w.id}','${key}',false)" style="width:36px">✗</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function markAttendance(wid, date, present) {
+  const att = DB.getObj('attendance');
+  if (!att[date]) att[date] = {};
+  att[date][wid] = present;
+  DB.set('attendance', att);
+  renderAttendance();
+}
+function renderWages() {
+  const workers = DB.get('labour');
+  const att = DB.getObj('attendance');
+  const month = currMonth();
+  const wl = document.getElementById('wages-list');
+  if (!wl) return;
+  if (!workers.length) { wl.innerHTML = '<div class="empty-state"><p>कामगार नाही</p></div>'; return; }
+  wl.innerHTML = workers.map(w => {
+    const days = Object.keys(att).filter(d => d.startsWith(month) && att[d][w.id] === true).length;
+    const total = days * (w.wage || 0);
+    return `<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:15px;font-weight:700">${w.name}</div>
+        <span class="badge badge-gold">₹${w.wage}/day</span>
+      </div>
+      <div style="display:flex;gap:12px;font-size:13px">
+        <div><span style="color:var(--text-muted)">हजर: </span><span style="font-weight:700">${days} दिवस</span></div>
+        <div><span style="color:var(--text-muted)">पगार: </span><span style="font-weight:700;color:var(--gold)">${fmt(total)}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── QUOTATION ─────────────────────────────────────────────────
+let quoteLines = [];
+function initQuotation() {
+  if (!quoteLines.length) quoteLines = [newQuoteLine()];
+  renderQuoteLines();
+  calcQuoteTotal();
+  renderQuotationList();
+}
+function newQuoteLine() { return { id: DB.id(), desc: '', qty: 1, rate: 0 }; }
+function addQuoteLine() { quoteLines.push(newQuoteLine()); renderQuoteLines(); }
+function removeQuoteLine(id) { quoteLines = quoteLines.filter(l => l.id !== id); if (!quoteLines.length) quoteLines = [newQuoteLine()]; renderQuoteLines(); calcQuoteTotal(); }
+function renderQuoteLines() {
+  document.getElementById('quote-lines').innerHTML = quoteLines.map(l => `
+    <div class="quote-line">
+      <input type="text" class="form-input" placeholder="Description" value="${l.desc}" style="flex:2" oninput="updateQL('${l.id}','desc',this.value)">
+      <input type="number" class="form-input qty" placeholder="Qty" value="${l.qty}" oninput="updateQL('${l.id}','qty',this.value);calcQuoteTotal()">
+      <input type="number" class="form-input rate" placeholder="Rate" value="${l.rate || ''}" oninput="updateQL('${l.id}','rate',this.value);calcQuoteTotal()">
+      <button class="btn btn-danger btn-sm" style="padding:6px 8px;flex-shrink:0" onclick="removeQuoteLine('${l.id}')">✕</button>
+    </div>`).join('');
+}
+function updateQL(id, field, val) {
+  const l = quoteLines.find(x => x.id === id);
+  if (l) { l[field] = field === 'desc' ? val : parseFloat(val) || 0; }
+}
+function calcQuoteTotal() {
+  const subtotal = quoteLines.reduce((a, l) => a + (l.qty || 0) * (l.rate || 0), 0);
+  const rate = parseFloat(document.getElementById('q-gst-rate')?.value) || 0;
+  const gst = subtotal * rate / 100;
+  const grand = subtotal + gst;
+  setText('q-subtotal', fmt(subtotal));
+  setText('q-gst-amt', fmt(gst));
+  setText('q-grand-total', fmt(grand));
+  return { subtotal, gst, grand };
+}
+function quoteTab(tab, btn) {
+  document.querySelectorAll('#page-quotation .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('quote-create-panel').style.display = tab === 'create' ? 'block' : 'none';
+  document.getElementById('quote-list-panel').style.display = tab === 'list' ? 'block' : 'none';
+  if (tab === 'list') renderQuotationList();
+}
+function saveQuotation() {
+  const cname = getVal('q-cname');
+  if (!cname || !quoteLines.length) { showToast('ग्राहकाचे नाव आणि items भरा', 'error'); return; }
+  const totals = calcQuoteTotal();
+  const q = {
+    id: DB.id(), cname, date: getVal('q-date'),
+    project: getVal('q-project'), lines: JSON.parse(JSON.stringify(quoteLines)),
+    gstRate: document.getElementById('q-gst-rate')?.value || 18,
+    ...totals, createdAt: new Date().toISOString()
+  };
+  DB.push('quotations', q);
+  showToast('Quotation साठवली ✓', 'success');
+  renderQuotationList();
+}
+function renderQuotationList() {
+  const quotes = DB.get('quotations').reverse();
+  const c = document.getElementById('quotation-list-container');
+  if (!c) return;
+  if (!quotes.length) { c.innerHTML = '<div class="empty-state"><div class="empty-icon">📄</div><h3>Quotation नाही</h3></div>'; return; }
+  c.innerHTML = quotes.map(q => `
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div><div style="font-size:14px;font-weight:700">${q.cname}</div><div style="font-size:12px;color:var(--text-secondary)">${q.project || ''} · ${q.date}</div></div>
+        <div style="font-size:16px;font-weight:800;color:var(--gold)">${fmt(q.grand)}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-primary btn-sm" onclick="printQuotationById('${q.id}')">🖨️ Print</button>
+        <button class="btn btn-success btn-sm" onclick="convertToInvoice('${q.id}')">→ Invoice</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteQuotation('${q.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function deleteQuotation(id) { DB.delete('quotations', id); renderQuotationList(); showToast('Deleted'); }
+function convertToInvoice(qid) {
+  const q = DB.get('quotations').find(x => x.id === qid);
+  if (!q) return;
+  navTo('invoice');
+  setTimeout(() => {
+    setVal('inv-cname', q.cname); setVal('inv-date', q.date);
+    invLines = q.lines.map(l => ({...l, id: DB.id()}));
+    renderInvLines(); calcInvTotal();
+  }, 200);
+}
+function printQuotation() { printQuotationData(quoteLines, getVal('q-cname'), getVal('q-project'), getVal('q-date'), document.getElementById('q-gst-rate')?.value); }
+function printQuotationById(id) {
+  const q = DB.get('quotations').find(x => x.id === id);
+  if (q) printQuotationData(q.lines, q.cname, q.project, q.date, q.gstRate);
+}
+function printQuotationData(lines, cname, project, date, gstRate) {
+  const s = DB.getObj('settings');
+  const subtotal = lines.reduce((a, l) => a + l.qty * l.rate, 0);
+  const gst = subtotal * (parseFloat(gstRate) || 0) / 100;
+  const grand = subtotal + gst;
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Quotation</title>
+  <style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;color:#222}
+  h2{color:#c9a84c}table{width:100%;border-collapse:collapse;margin:20px 0}
+  th{background:#1a2235;color:#c9a84c;padding:10px}td{padding:8px;border:1px solid #ddd}
+  .total{font-size:20px;font-weight:bold;color:#c9a84c}.sign{margin-top:60px}
+  @media print{body{margin:10px}}</style></head><body>
+  <h2>${s.bizName || 'Krishna Steel Railing & Furniture'}</h2>
+  <p>${s.address || 'Shekaiwadi, Akole, Ahmednagar'} | ${s.phone || ''} | GSTIN: ${s.gstin || ''}</p>
+  <hr>
+  <h3 style="color:#c9a84c">QUOTATION</h3>
+  <p><b>To:</b> ${cname} | <b>Project:</b> ${project || ''} | <b>Date:</b> ${date}</p>
+  <table><tr><th>#</th><th>Description</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>
+  ${lines.map((l,i) => `<tr><td>${i+1}</td><td>${l.desc}</td><td>${l.qty}</td><td>${fmt(l.rate)}</td><td>${fmt(l.qty*l.rate)}</td></tr>`).join('')}
+  </table>
+  <div style="text-align:right">
+    <p>Subtotal: ${fmt(subtotal)}</p>
+    <p>GST (${gstRate}%): ${fmt(gst)}</p>
+    <p class="total">Total: ${fmt(grand)}</p>
+  </div>
+  <div class="sign"><p>Authorized Signature: _______________</p><p>${s.ownerName || 'Owner'}</p></div>
+  <script>window.print();<\/script></body></html>`);
+}
+
+// ── INVOICE ───────────────────────────────────────────────────
+let invLines = [];
+function initInvoice() {
+  if (!invLines.length) invLines = [newQuoteLine()];
+  renderInvLines(); calcInvTotal();
+  renderInvoiceList();
+}
+function addInvLine() { invLines.push(newQuoteLine()); renderInvLines(); }
+function removeInvLine(id) { invLines = invLines.filter(l => l.id !== id); if (!invLines.length) invLines = [newQuoteLine()]; renderInvLines(); calcInvTotal(); }
+function renderInvLines() {
+  document.getElementById('inv-lines').innerHTML = invLines.map(l => `
+    <div class="quote-line">
+      <input type="text" class="form-input" placeholder="Description" value="${l.desc}" style="flex:2" oninput="updateIL('${l.id}','desc',this.value)">
+      <input type="number" class="form-input qty" placeholder="Qty" value="${l.qty}" oninput="updateIL('${l.id}','qty',this.value);calcInvTotal()">
+      <input type="number" class="form-input rate" placeholder="Rate" value="${l.rate || ''}" oninput="updateIL('${l.id}','rate',this.value);calcInvTotal()">
+      <button class="btn btn-danger btn-sm" style="padding:6px 8px;flex-shrink:0" onclick="removeInvLine('${l.id}')">✕</button>
+    </div>`).join('');
+}
+function updateIL(id, field, val) {
+  const l = invLines.find(x => x.id === id);
+  if (l) { l[field] = field === 'desc' ? val : parseFloat(val) || 0; }
+}
+function calcInvTotal() {
+  const subtotal = invLines.reduce((a, l) => a + (l.qty || 0) * (l.rate || 0), 0);
+  const cgst = subtotal * 0.09, sgst = subtotal * 0.09;
+  const grand = subtotal + cgst + sgst;
+  setText('inv-subtotal', fmt(subtotal));
+  setText('inv-cgst', fmt(cgst));
+  setText('inv-sgst', fmt(sgst));
+  setText('inv-grand-total', fmt(grand));
+  return { subtotal, cgst, sgst, grand };
+}
+function invTab(tab, btn) {
+  document.querySelectorAll('#page-invoice .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('inv-create-panel').style.display = tab === 'create' ? 'block' : 'none';
+  document.getElementById('inv-list-panel').style.display = tab === 'list' ? 'block' : 'none';
+  if (tab === 'list') renderInvoiceList();
+}
+function saveInvoice() {
+  const cname = getVal('inv-cname');
+  if (!cname) { showToast('ग्राहकाचे नाव लिहा', 'error'); return; }
+  const totals = calcInvTotal();
+  const inv = {
+    id: DB.id(), invNo: getVal('inv-no'), cname, date: getVal('inv-date'),
+    phone: getVal('inv-phone'), address: getVal('inv-address'),
+    gstin: getVal('inv-gstin'), pan: getVal('inv-pan'),
+    lines: JSON.parse(JSON.stringify(invLines)), ...totals,
+    createdAt: new Date().toISOString()
+  };
+  DB.push('invoices', inv);
+  showToast('Invoice साठवली ✓', 'success');
+  // Auto increment invoice no
+  const count = DB.get('invoices').length + 1;
+  setVal('inv-no', 'KSR-' + String(count).padStart(3, '0'));
+  renderInvoiceList();
+}
+function renderInvoiceList() {
+  const invoices = DB.get('invoices').reverse();
+  const c = document.getElementById('invoice-list-container');
+  if (!c) return;
+  if (!invoices.length) { c.innerHTML = '<div class="empty-state"><div class="empty-icon">🧾</div><h3>Invoice नाही</h3></div>'; return; }
+  c.innerHTML = invoices.map(inv => `
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div><div style="font-size:14px;font-weight:700">${inv.invNo} · ${inv.cname}</div><div style="font-size:12px;color:var(--text-secondary)">${inv.date}</div></div>
+        <div style="font-size:16px;font-weight:800;color:var(--gold)">${fmt(inv.grand)}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-primary btn-sm" onclick="printInvoiceById('${inv.id}')">🖨️ Print</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteInvoice('${inv.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function deleteInvoice(id) { DB.delete('invoices', id); renderInvoiceList(); showToast('Deleted'); }
+function printInvoice() { printInvoiceData(invLines, getVal('inv-cname'), getVal('inv-date'), getVal('inv-no'), getVal('inv-phone'), getVal('inv-address'), getVal('inv-gstin')); }
+function printInvoiceById(id) {
+  const inv = DB.get('invoices').find(x => x.id === id);
+  if (inv) printInvoiceData(inv.lines, inv.cname, inv.date, inv.invNo, inv.phone, inv.address, inv.gstin);
+}
+function printInvoiceData(lines, cname, date, invNo, phone, address, gstin) {
+  const s = DB.getObj('settings');
+  const subtotal = lines.reduce((a, l) => a + l.qty * l.rate, 0);
+  const cgst = subtotal * 0.09, sgst = subtotal * 0.09;
+  const grand = subtotal + cgst + sgst;
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Invoice ${invNo}</title>
+  <style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;color:#222}
+  h2{color:#c9a84c}table{width:100%;border-collapse:collapse;margin:20px 0}
+  th{background:#1a2235;color:#c9a84c;padding:10px}td{padding:8px;border:1px solid #ddd}
+  .total{font-size:20px;font-weight:bold;color:#c9a84c}
+  .header{display:flex;justify-content:space-between}
+  @media print{body{margin:10px}}</style></head><body>
+  <div class="header">
+    <div><h2>${s.bizName || 'Krishna Steel Railing & Furniture'}</h2>
+    <p>${s.address || 'Shekaiwadi, Akole'} | ${s.phone || ''}</p>
+    <p>GSTIN: ${s.gstin || 'N/A'}</p></div>
+    <div style="text-align:right"><h3 style="color:#c9a84c">TAX INVOICE</h3>
+    <p>Invoice No: <b>${invNo}</b></p><p>Date: <b>${date}</b></p></div>
+  </div>
+  <hr>
+  <div class="header" style="margin:16px 0">
+    <div><b>Bill To:</b><br>${cname}<br>${address || ''}<br>${phone || ''}</div>
+    ${gstin ? `<div>GSTIN: ${gstin}</div>` : ''}
+  </div>
+  <table><tr><th>#</th><th>Description</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>
+  ${lines.map((l,i) => `<tr><td>${i+1}</td><td>${l.desc}</td><td>${l.qty}</td><td>${fmt(l.rate)}</td><td>${fmt(l.qty*l.rate)}</td></tr>`).join('')}
+  </table>
+  <div style="text-align:right">
+    <p>Subtotal: ${fmt(subtotal)}</p>
+    <p>CGST (9%): ${fmt(cgst)}</p>
+    <p>SGST (9%): ${fmt(sgst)}</p>
+    <p class="total">Grand Total: ${fmt(grand)}</p>
+  </div>
+  <p style="margin-top:40px"><b>Bank Details:</b> Account holder: ${s.ownerName || ''}</p>
+  <div style="margin-top:60px;display:flex;justify-content:space-between">
+    <div>Customer Signature: _______________</div>
+    <div>Authorized Signatory: _______________<br>${s.ownerName || ''}</div>
+  </div>
+  <script>window.print();<\/script></body></html>`);
+}
+
+// ── REPORTS ───────────────────────────────────────────────────
+let plChart, expPieChart, incBarChart;
+function renderReports() {
+  generateExpPieChart();
+  generateIncBarChart();
+  renderProjectReport();
+}
+function reportTab(tab, btn) {
+  document.querySelectorAll('#page-reports .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['pl','expense','income','project'].forEach(t => {
+    document.getElementById('report-' + t + '-panel').style.display = 'none';
+  });
+  document.getElementById('report-' + tab + '-panel').style.display = 'block';
+  if (tab === 'expense') generateExpPieChart();
+  if (tab === 'income') generateIncBarChart();
+  if (tab === 'project') renderProjectReport();
+}
+function generatePLReport() {
+  const month = getVal('rep-month') || currMonth();
+  const expenses = DB.get('expenses').filter(e => monthStr(e.date) === month);
+  const incomes = DB.get('incomes').filter(i => monthStr(i.date) === month);
+  const totalExp = expenses.reduce((a, e) => a + e.amount, 0);
+  const totalInc = incomes.reduce((a, i) => a + i.amount, 0);
+  const pl = totalInc - totalExp;
+
+  // Draw bar chart
+  const canvas = document.getElementById('pl-bar-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.parentElement.offsetWidth;
+  canvas.height = 200;
+  const isDark = currentTheme === 'dark';
+  const textColor = isDark ? '#8ea3c3' : '#4a6080';
+  const bgColor = isDark ? '#1a2235' : '#ffffff';
+
+  // Simple bar chart
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bars = [
+    { label: 'Income', value: totalInc, color: '#2ecc71' },
+    { label: 'Expense', value: totalExp, color: '#e74c3c' },
+    { label: 'P/L', value: Math.abs(pl), color: pl >= 0 ? '#c9a84c' : '#e74c3c' }
+  ];
+  const max = Math.max(...bars.map(b => b.value), 1);
+  const W = canvas.width, H = canvas.height;
+  const pad = 40, barW = (W - pad * 2) / bars.length - 16;
+
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = textColor;
+  ctx.font = '11px Inter';
+  ctx.textAlign = 'center';
+
+  bars.forEach((b, i) => {
+    const x = pad + i * ((W - pad * 2) / bars.length) + 8;
+    const bh = ((b.value / max) * (H - 60)) || 2;
+    const y = H - 30 - bh;
+    // Bar
+    ctx.fillStyle = b.color + '33';
+    ctx.fillRect(x, y, barW, bh);
+    ctx.fillStyle = b.color;
+    ctx.fillRect(x, y, barW, 3);
+    // Label
+    ctx.fillStyle = textColor;
+    ctx.fillText(b.label, x + barW / 2, H - 10);
+    ctx.fillStyle = b.color;
+    ctx.font = '12px Inter';
+    ctx.fillText(fmt(b.value), x + barW / 2, y - 6);
+    ctx.font = '11px Inter';
+  });
+
+  // P/L Summary
+  document.getElementById('pl-summary-card').innerHTML = `
+    <div class="summary-row"><span class="summary-label">📅 Month</span><span class="summary-value">${month}</span></div>
+    <div class="summary-row"><span class="summary-label">💰 Total Income</span><span class="summary-value" style="color:var(--success)">${fmt(totalInc)}</span></div>
+    <div class="summary-row"><span class="summary-label">💸 Total Expense</span><span class="summary-value" style="color:var(--danger)">${fmt(totalExp)}</span></div>
+    <div class="summary-row"><span class="summary-label">📊 Transactions</span><span class="summary-value">${expenses.length + incomes.length}</span></div>
+    <div class="summary-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:12px">
+      <span class="summary-label" style="font-size:15px;font-weight:700">नफा / तोटा</span>
+      <span class="summary-value" style="font-size:20px;color:${pl>=0?'var(--success)':'var(--danger)'}">${pl>=0?'▲':'▼'} ${fmt(Math.abs(pl))}</span>
+    </div>`;
+}
+function generateExpPieChart() {
+  const expenses = DB.get('expenses');
+  const byCategory = {};
+  expenses.forEach(e => {
+    byCategory[e.category] = (byCategory[e.category] || 0) + e.amount;
+  });
+  const cats = Object.keys(byCategory);
+  const canvas = document.getElementById('exp-pie-chart');
+  if (!canvas || !cats.length) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.parentElement.offsetWidth;
+  canvas.height = 200;
+  const isDark = currentTheme === 'dark';
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const total = Object.values(byCategory).reduce((a, v) => a + v, 0);
+  const cx = 90, cy = 100, r = 75;
+  let startAngle = -Math.PI / 2;
+  const colors = ['#3498db','#e74c3c','#e67e22','#2ecc71','#9b59b6','#1abc9c','#f39c12','#95a5a6'];
+  cats.forEach((cat, i) => {
+    const slice = (byCategory[cat] / total) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + slice);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    startAngle += slice;
+  });
+  // Legend
+  const lx = 190, ly = 20;
+  ctx.font = '11px Inter';
+  cats.forEach((cat, i) => {
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fillRect(lx, ly + i * 22, 12, 12);
+    ctx.fillStyle = isDark ? '#8ea3c3' : '#4a6080';
+    ctx.fillText(`${cat}: ${fmt(byCategory[cat])}`, lx + 16, ly + i * 22 + 10);
+  });
+  // Category breakdown
+  const bd = document.getElementById('exp-cat-breakdown');
+  if (bd) bd.innerHTML = cats.map((cat, i) => `
+    <div class="summary-row">
+      <span class="summary-label"><span style="color:${colors[i%colors.length]}">■</span> ${cat}</span>
+      <span class="summary-value" style="color:var(--danger)">${fmt(byCategory[cat])} (${((byCategory[cat]/total)*100).toFixed(1)}%)</span>
+    </div>`).join('');
+}
+function generateIncBarChart() {
+  const incomes = DB.get('incomes');
+  const byMonth = {};
+  incomes.forEach(i => {
+    const m = monthStr(i.date);
+    byMonth[m] = (byMonth[m] || 0) + i.amount;
+  });
+  const months = Object.keys(byMonth).sort().slice(-6);
+  const canvas = document.getElementById('inc-bar-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.parentElement.offsetWidth;
+  canvas.height = 200;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const isDark = currentTheme === 'dark';
+  const W = canvas.width, H = canvas.height;
+  const max = Math.max(...months.map(m => byMonth[m]), 1);
+  const pad = 10, barW = (W - pad * 2) / Math.max(months.length, 1) - 8;
+  ctx.fillStyle = isDark ? '#1a2235' : '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+  months.forEach((m, i) => {
+    const x = pad + i * ((W - pad * 2) / months.length) + 4;
+    const bh = ((byMonth[m] / max) * (H - 50)) || 2;
+    const y = H - 30 - bh;
+    ctx.fillStyle = '#2ecc7133';
+    ctx.fillRect(x, y, barW, bh);
+    ctx.fillStyle = '#2ecc71';
+    ctx.fillRect(x, y, barW, 3);
+    ctx.fillStyle = isDark ? '#8ea3c3' : '#4a6080';
+    ctx.font = '10px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText(m.slice(5), x + barW / 2, H - 10);
+  });
+  const summary = document.getElementById('inc-summary-card');
+  if (summary) {
+    const total = incomes.reduce((a, i) => a + i.amount, 0);
+    const avgMonth = total / Math.max(months.length, 1);
+    summary.innerHTML = `
+      <div class="summary-row"><span class="summary-label">एकूण Income</span><span class="summary-value" style="color:var(--success)">${fmt(total)}</span></div>
+      <div class="summary-row"><span class="summary-label">Average Monthly</span><span class="summary-value">${fmt(avgMonth)}</span></div>
+      <div class="summary-row"><span class="summary-label">Transactions</span><span class="summary-value">${incomes.length}</span></div>`;
+  }
+}
+function renderProjectReport() {
+  const projects = DB.get('projects');
+  const expenses = DB.get('expenses');
+  const incomes = DB.get('incomes');
+  const c = document.getElementById('project-report-list');
+  if (!c) return;
+  if (!projects.length) { c.innerHTML = '<div class="empty-state"><p>प्रकल्प नाही</p></div>'; return; }
+  c.innerHTML = projects.map(p => {
+    const pExp = expenses.filter(e => e.projectId === p.id).reduce((a, e) => a + e.amount, 0);
+    const pInc = incomes.filter(i => i.projectId === p.id).reduce((a, i) => a + i.amount, 0);
+    const pl = pInc - pExp;
+    return `<div class="card" style="margin-bottom:10px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:8px">${p.name}</div>
+      <div style="display:flex;gap:12px;font-size:13px">
+        <div><span style="color:var(--text-muted)">Income: </span><span style="color:var(--success);font-weight:600">${fmt(pInc)}</span></div>
+        <div><span style="color:var(--text-muted)">Expense: </span><span style="color:var(--danger);font-weight:600">${fmt(pExp)}</span></div>
+        <div><span style="color:var(--text-muted)">P/L: </span><span style="font-weight:700;color:${pl>=0?'var(--success)':'var(--danger)'}">${fmt(pl)}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function exportReport() { window.print(); }
+
+// ── CALCULATORS ───────────────────────────────────────────────
+function calcTab(tab, btn) {
+  document.querySelectorAll('#page-calculators .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['rf','pipe','cost','profit','gst'].forEach(t => document.getElementById('calc-' + t + '-panel').style.display = 'none');
+  document.getElementById('calc-' + tab + '-panel').style.display = 'block';
+}
+function calcRF() {
+  const len = getNum('rf-length'), rate = getNum('rf-rate');
+  const posts = getNum('rf-posts'), postRate = getNum('rf-post-rate');
+  const railCost = len * rate, postCost = posts * postRate;
+  const total = railCost + postCost;
+  setText('rf-result', fmt(total));
+  setText('rf-rail-cost', fmt(railCost));
+  setText('rf-post-cost', fmt(postCost));
+  setText('rf-total', fmt(total));
+}
+function calcPW() {
+  const od = getNum('pw-od'), thick = getNum('pw-thick');
+  const len = getNum('pw-len'), rate = getNum('pw-rate');
+  // SS pipe weight = (OD - t) * t * 0.02466 * length_m * density_factor
+  const weight = (od - thick) * thick * 0.02466 * len;
+  const cost = weight * rate;
+  setText('pw-weight', weight.toFixed(2) + ' kg');
+  setText('pw-kg', weight.toFixed(2));
+  setText('pw-cost', fmt(cost));
+}
+function addMatLine() {
+  const div = document.createElement('div');
+  div.className = 'quote-line';
+  div.innerHTML = `<input type="text" class="form-input" placeholder="साहित्य" style="flex:2"><input type="number" class="form-input qty" placeholder="Qty"><input type="number" class="form-input rate" placeholder="Rate" oninput="calcMatCost()">`;
+  document.getElementById('mat-items').appendChild(div);
+}
+function calcMatCost() {
+  let total = 0;
+  document.querySelectorAll('#mat-items .quote-line').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const qty = parseFloat(inputs[1]?.value) || 0;
+    const rate = parseFloat(inputs[2]?.value) || 0;
+    total += qty * rate;
+  });
+  setText('mat-total', fmt(total));
+}
+function calcProfit() {
+  const cost = getNum('pr-cost'), sell = getNum('pr-sell'), overhead = getNum('pr-overhead');
+  const totalCost = cost + overhead;
+  const profit = sell - totalCost;
+  const margin = sell > 0 ? (profit / sell * 100) : 0;
+  const roi = totalCost > 0 ? (profit / totalCost * 100) : 0;
+  setText('pr-profit', fmt(profit));
+  const pel = document.getElementById('pr-profit');
+  if (pel) pel.style.color = profit >= 0 ? 'var(--success)' : 'var(--danger)';
+  setText('pr-margin', margin.toFixed(1) + '%');
+  setText('pr-roi', roi.toFixed(1) + '%');
+}
+function calcGST() {
+  const amt = getNum('gst-amount'), rate = parseFloat(getVal('gst-rate')) || 18;
+  const type = getVal('gst-type');
+  let base, gstAmt;
+  if (type === 'exclusive') {
+    base = amt;
+    gstAmt = base * rate / 100;
+  } else {
+    base = amt / (1 + rate / 100);
+    gstAmt = amt - base;
+  }
+  const grand = base + gstAmt;
+  setText('gst-base', fmt(base));
+  setText('gst-cgst', fmt(gstAmt / 2));
+  setText('gst-sgst', fmt(gstAmt / 2));
+  setText('gst-grand', fmt(grand));
+  setText('gst-total', fmt(grand));
+}
+
+// ── REMINDERS ─────────────────────────────────────────────────
+function saveReminder() {
+  const title = getVal('rem-title');
+  if (!title) { showToast('Title लिहा', 'error'); return; }
+  const record = {
+    id: DB.id(), title, type: getVal('rem-type'),
+    date: getVal('rem-date'), amount: getNum('rem-amount'),
+    notes: getVal('rem-notes'), done: false,
+    createdAt: new Date().toISOString()
+  };
+  DB.push('reminders', record);
+  closeModal('reminder-modal');
+  showToast('Reminder जोडला ✓', 'success');
+  renderReminders();
+}
+function renderReminders() {
+  const reminders = DB.get('reminders').sort((a, b) => a.date.localeCompare(b.date));
+  const c = document.getElementById('reminder-list-container');
+  if (!c) return;
+  const today = todayStr();
+  if (!reminders.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">🔔</div><h3>Reminder नाही</h3></div>';
+    return;
+  }
+  c.innerHTML = reminders.map(r => {
+    const overdue = r.date && r.date < today && !r.done;
+    const typeIcon = { payment:'💳', gst:'📋', supplier:'🏭', other:'🔔' };
+    return `<div class="card" style="margin-bottom:10px;${r.done?'opacity:0.5':''}${overdue?';border-color:var(--danger)':''}">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="font-size:24px">${typeIcon[r.type] || '🔔'}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;${r.done?'text-decoration:line-through':''}">${r.title}</div>
+          <div style="font-size:12px;color:var(--text-secondary)">${r.date ? '📅 ' + r.date : ''} ${r.amount ? '· ' + fmt(r.amount) : ''}</div>
+          ${overdue ? '<span class="badge badge-danger">Overdue!</span>' : ''}
+          ${r.notes ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px">${r.notes}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <button class="btn btn-sm ${r.done?'btn-secondary':'btn-success'}" onclick="toggleReminder('${r.id}')">${r.done?'↩️':'✓'}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteReminder('${r.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleReminder(id) {
+  const r = DB.get('reminders').find(x => x.id === id);
+  if (!r) return;
+  DB.update('reminders', id, { done: !r.done });
+  renderReminders();
+}
+function deleteReminder(id) {
+  DB.delete('reminders', id);
+  renderReminders();
+}
+function checkReminders() {
+  const reminders = DB.get('reminders').filter(r => !r.done);
+  const today = todayStr();
+  const due = reminders.filter(r => r.date === today || r.date < today);
+  if (due.length) showToast(`🔔 ${due.length} Reminder${due.length > 1 ? 's' : ''} आहेत!`);
+}
+function showNotifications() { navTo('reminders'); }
+
+// ── VOICE ENTRY ───────────────────────────────────────────────
+let recognition;
+function startVoice() {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    showToast('Voice not supported on this browser', 'error'); return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'mr-IN';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  document.getElementById('voice-indicator').classList.add('active');
+  recognition.onresult = e => {
+    const text = e.results[0][0].transcript;
+    document.getElementById('voice-text').textContent = text;
+    parseVoiceEntry(text);
+  };
+  recognition.onerror = () => {
+    document.getElementById('voice-indicator').classList.remove('active');
+    showToast('Voice error', 'error');
+  };
+  recognition.onend = () => {
+    setTimeout(() => document.getElementById('voice-indicator').classList.remove('active'), 1500);
+  };
+  recognition.start();
+}
+function parseVoiceEntry(text) {
+  // Simple parsing: "Category Amount" or "Name Amount"
+  const categories = ['material', 'labour', 'diesel', 'tea', 'transport', 'machine', 'electricity'];
+  const words = text.toLowerCase().split(' ');
+  const amount = words.map(w => parseFloat(w)).find(n => !isNaN(n) && n > 0);
+  let category = 'Other', name = text;
+  for (const cat of categories) {
+    if (text.toLowerCase().includes(cat)) {
+      category = cat.charAt(0).toUpperCase() + cat.slice(1);
+      if (cat === 'machine') category = 'Machine Repair';
+      name = category;
+      break;
+    }
+  }
+  if (amount) {
+    const record = {
+      id: DB.id(), name: name || 'Voice Entry',
+      amount, date: todayStr(), category,
+      notes: 'Voice: ' + text, createdAt: new Date().toISOString()
+    };
+    DB.push('expenses', record);
+    showToast(`✓ ${category}: ${fmt(amount)} Add केला`, 'success');
+    renderDashboard();
+    if (currentPage === 'expenses') renderExpenses();
+  } else {
+    showToast('रक्कम समजली नाही. पुन्हा प्रयत्न करा.', 'error');
+  }
+}
+
+// ── BACKUP & RESTORE ──────────────────────────────────────────
+function exportJSON() {
+  const data = {
+    version: '1.0', exportedAt: new Date().toISOString(),
+    expenses: DB.get('expenses'), incomes: DB.get('incomes'),
+    projects: DB.get('projects'), customers: DB.get('customers'),
+    suppliers: DB.get('suppliers'), inventory: DB.get('inventory'),
+    labour: DB.get('labour'), quotations: DB.get('quotations'),
+    invoices: DB.get('invoices'), reminders: DB.get('reminders'),
+    settings: DB.getObj('settings'), attendance: DB.getObj('attendance')
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `krishna-backup-${todayStr()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Backup export केला ✓', 'success');
+}
+function exportExcel() {
+  const expenses = DB.get('expenses');
+  const incomes = DB.get('incomes');
+  let csv = 'TYPE,DATE,NAME,CATEGORY/PROJECT,AMOUNT,MODE/NOTES\n';
+  expenses.forEach(e => csv += `Expense,${e.date},"${e.name}",${e.category},${e.amount},"${e.notes||''}"\n`);
+  incomes.forEach(i => csv += `Income,${i.date},"${i.customer}","${i.projectName||''}",${i.amount},${i.mode}\n`);
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `krishna-data-${todayStr()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Excel export केला ✓', 'success');
+}
+function exportPDFBackup() { window.print(); }
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.version) throw new Error('Invalid backup file');
+      if (!confirm('Import केल्याने सर्व डेटा replace होईल. पुढे जायचे आहे का?')) return;
+      ['expenses','incomes','projects','customers','suppliers','inventory','labour','quotations','invoices','reminders'].forEach(k => {
+        if (data[k]) DB.set(k, data[k]);
+      });
+      if (data.settings) DB.set('settings', data.settings);
+      if (data.attendance) DB.set('attendance', data.attendance);
+      showToast('Import यशस्वी ✓', 'success');
+      renderDashboard();
+    } catch (err) {
+      showToast('Invalid backup file', 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+function renderBackup() {
+  const d = document.getElementById('data-summary');
+  if (!d) return;
+  d.innerHTML = `
+    <div class="summary-row"><span class="summary-label">Expenses</span><span class="summary-value">${DB.get('expenses').length}</span></div>
+    <div class="summary-row"><span class="summary-label">Incomes</span><span class="summary-value">${DB.get('incomes').length}</span></div>
+    <div class="summary-row"><span class="summary-label">Projects</span><span class="summary-value">${DB.get('projects').length}</span></div>
+    <div class="summary-row"><span class="summary-label">Customers</span><span class="summary-value">${DB.get('customers').length}</span></div>
+    <div class="summary-row"><span class="summary-label">Suppliers</span><span class="summary-value">${DB.get('suppliers').length}</span></div>
+    <div class="summary-row"><span class="summary-label">Inventory Items</span><span class="summary-value">${DB.get('inventory').length}</span></div>
+    <div class="summary-row"><span class="summary-label">Invoices</span><span class="summary-value">${DB.get('invoices').length}</span></div>`;
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────
+function saveBizSettings() {
+  const s = DB.getObj('settings');
+  DB.set('settings', {
+    ...s,
+    bizName: getVal('s-biz-name'),
+    ownerName: getVal('s-owner-name'),
+    phone: getVal('s-phone'),
+    address: getVal('s-address'),
+    gstin: getVal('s-gstin')
+  });
+  showToast('Settings साठवल्या ✓', 'success');
+  setTodayDate();
+}
+function saveBalances() {
+  const s = DB.getObj('settings');
+  DB.set('settings', { ...s, cash: getNum('s-cash'), bank: getNum('s-bank') });
+  showToast('Balances साठवले ✓', 'success');
+  renderDashboard();
+}
+function updatePIN() {
+  const pin = getVal('s-pin'), pin2 = getVal('s-pin2');
+  if (pin.length !== 4 || !/^\d{4}$/.test(pin)) { showToast('4 अंकी PIN लिहा', 'error'); return; }
+  if (pin !== pin2) { showToast('PIN जुळत नाही', 'error'); return; }
+  const s = DB.getObj('settings');
+  DB.set('settings', { ...s, pin });
+  showToast('PIN बदलला ✓', 'success');
+  setVal('s-pin', ''); setVal('s-pin2', '');
+}
+function clearAllData() {
+  if (!confirm('⚠️ सर्व डेटा Delete होईल. खात्री आहे का?')) return;
+  if (!confirm('⚠️ Last Warning! सर्व डेटा Delete होईल!')) return;
+  ['expenses','incomes','projects','customers','suppliers','inventory','labour','quotations','invoices','reminders','attendance'].forEach(k => {
+    localStorage.removeItem('kbm_' + k);
+  });
+  showToast('सर्व डेटा Delete केला', 'error');
+  renderDashboard();
+}
+
+// ── INSTALL PROMPT ────────────────────────────────────────────
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => showInstallBanner(), 3000);
+});
+function showInstallBanner() {
+  if (!deferredPrompt) return;
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;bottom:80px;left:16px;right:16px;background:var(--bg-card);border:1px solid var(--gold);border-radius:14px;padding:14px;z-index:400;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.4)';
+  banner.innerHTML = `<div style="font-size:28px">📱</div><div style="flex:1"><div style="font-size:13px;font-weight:700">App Install करा</div><div style="font-size:11px;color:var(--text-secondary)">Home screen वर Add करा</div></div><button onclick="installApp()" class="btn btn-primary btn-sm">Install</button><button onclick="this.parentElement.remove()" class="btn btn-secondary btn-sm">✕</button>`;
+  document.body.appendChild(banner);
+  setTimeout(() => banner.remove && banner.remove(), 10000);
+}
+async function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const result = await deferredPrompt.userChoice;
+  if (result.outcome === 'accepted') showToast('App Install झाला ✓', 'success');
+  deferredPrompt = null;
+  document.querySelectorAll('[onclick="installApp()"]').forEach(e => e.closest('div[style]')?.remove());
+}
+
+// ── BOOT ──────────────────────────────────────────────────────
+// Auto-unlock if no pin set
+window.addEventListener('DOMContentLoaded', () => {
+  const s = DB.getObj('settings');
+  // Show lock only if pin is set
+  if (!s.pin) { skipLock(); }
+});
+</script>
+</body>
+</html>
